@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public abstract class Tree : MonoBehaviour
+public abstract class Trees : MonoBehaviour
 {
     [SerializeField] protected int _maxHp = 10;
     

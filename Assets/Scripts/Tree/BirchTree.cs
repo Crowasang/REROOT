@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class BirchTree : Tree
+public class BirchTree : Trees
 {
     
     protected override void OnDestroyed()
