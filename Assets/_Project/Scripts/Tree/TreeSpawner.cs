@@ -24,6 +24,7 @@ public class TreeSpawner : MonoBehaviour
     [SerializeField] private int _poolMaxSize = 1000;
 
     private readonly List<Trees> _spawnedTrees = new();
+    private readonly Subject<Trees> _onTreeFelled = new();
 
     // 나무 종류(프리팹)마다 풀을 따로 둔다.
     private readonly Dictionary<Trees, ObjectPool<Trees>> _poolByPrefab = new();
@@ -32,6 +33,14 @@ public class TreeSpawner : MonoBehaviour
     private Transform TreeRoot => _treeRoot != null ? _treeRoot : transform;
 
     public IReadOnlyList<Trees> SpawnedTrees => _spawnedTrees;
+
+    // 스폰한 나무 중 하나가 다 쓰러졌을 때 발행한다. 보상, 세션 시간 등이 구독한다.
+    public Observable<Trees> OnTreeFelled => _onTreeFelled;
+
+    private void OnDestroy()
+    {
+        _onTreeFelled.Dispose();
+    }
 
     public void Spawn(TreeData data)
     {
@@ -138,6 +147,7 @@ public class TreeSpawner : MonoBehaviour
     private void HandleTreeFelled(Trees tree)
     {
         _spawnedTrees.Remove(tree);
+        _onTreeFelled.OnNext(tree);
         _poolByInstance[tree].Release(tree);
     }
 }
