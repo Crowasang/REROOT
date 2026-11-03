@@ -18,6 +18,13 @@ public class PlayerMovement : MonoBehaviour
     {
         _moveInput = value.Get<Vector2>();
     }
+
+    // 입력을 끌 때 마지막 이동 입력이 남아 계속 미끄러지지 않도록 멈춘다.
+    public void Stop()
+    {
+        _moveInput = Vector2.zero;
+        _rb2d.linearVelocity = Vector2.zero;
+    }
     
     private void FixedUpdate()
     {

@@ -9,6 +9,7 @@ public abstract class Trees : MonoBehaviour
     [SerializeField] protected TreeData _data;
     [SerializeField] private Transform _visual;
     [SerializeField] private Collider2D _collider;
+    [SerializeField] private TreeHpBar _hpBar;
 
     [Header("피격 연출 (임시)")]
     [SerializeField] private float _hitShakeDuration = 0.12f;
@@ -70,6 +71,7 @@ public abstract class Trees : MonoBehaviour
         _collider.enabled = true;
         _visual.localPosition = _visualBasePosition;
         _spriteRenderer.color = _baseColor;
+        _hpBar.Hide();
     }
 
     public void TakeDamage(int damage)
@@ -83,10 +85,12 @@ public abstract class Trees : MonoBehaviour
 
         if (IsFelled)
         {
+            _hpBar.Hide();
             FallAndNotifyAsync(_activeCts.Token).Forget();
         }
         else
         {
+            _hpBar.Show((float)_currentHp / _data.MaxHp);
             PlayHitAsync(_activeCts.Token).Forget();
         }
     }
