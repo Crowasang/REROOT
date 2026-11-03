@@ -174,3 +174,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BirchTree
   _data: {fileID: 11400000, guid: e163141171319f44b840abdf47a6f8c5, type: 2}
+  _visual: {fileID: 2819424785592996266}
+  _collider: {fileID: 8897905426070249532}
+  _hitShakeDuration: 0.12
+  _hitShakeStrength: 0.08
+  _hitFlashColor: {r: 1, g: 0.55, b: 0.55, a: 1}
+  _fallDuration: 0.3
+  _fallingColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _currentHp: 0
