@@ -34,6 +34,9 @@ public class TreeSpawner : MonoBehaviour
 
     public IReadOnlyList<Trees> SpawnedTrees => _spawnedTrees;
 
+    // 아직 다 쓰러지지 않은 나무 수. 쓰러진 나무는 OnTreeFelled 발행 전에 빠진다.
+    public int RemainingCount => _spawnedTrees.Count;
+
     // 스폰한 나무 중 하나가 다 쓰러졌을 때 발행한다. 보상, 세션 시간 등이 구독한다.
     public Observable<Trees> OnTreeFelled => _onTreeFelled;
 

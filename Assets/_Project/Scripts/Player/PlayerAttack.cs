@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class PlayerAttack : MonoBehaviour
@@ -26,6 +27,7 @@ public class PlayerAttack : MonoBehaviour
     private ContactFilter2D _contactFilter;
     private PlayerMovement _movement;
     private bool _isAttacking;
+    private bool _isPointerOverUi;
     private Vector2 _lastAttackPoint;
 
     private void Awake()
@@ -34,10 +36,17 @@ public class PlayerAttack : MonoBehaviour
         _movement = GetComponent<PlayerMovement>();
     }
 
+    // 입력 콜백 안에서는 UI 판정이 한 프레임 늦으므로 Update에서 미리 읽어 둔다.
+    private void Update()
+    {
+        _isPointerOverUi = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+    }
+
     // PlayerInput(Send Messages)이 Attack 액션에서 호출한다.
     public void OnAttack(InputValue value)
     {
-        if (value.isPressed && !_isAttacking)
+        // 일시정지 버튼 같은 UI를 누른 클릭으로는 휘두르지 않는다.
+        if (value.isPressed && !_isAttacking && !_isPointerOverUi)
         {
             AttackAsync(destroyCancellationToken).Forget();
         }

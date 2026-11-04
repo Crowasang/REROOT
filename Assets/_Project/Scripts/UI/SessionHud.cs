@@ -11,6 +11,9 @@ public class SessionHud : MonoBehaviour
     [SerializeField] private Image _timeFill;
     [SerializeField] private TMP_Text _timeText;
     [SerializeField] private TMP_Text _woodText;
+    [SerializeField] private Button _pauseButton;
+
+    public Observable<Unit> OnPauseClicked => _pauseButton.OnClickAsObservable();
 
     private void Start()
     {

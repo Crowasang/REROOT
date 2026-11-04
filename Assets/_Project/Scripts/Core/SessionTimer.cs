@@ -17,6 +17,7 @@ public class SessionTimer : MonoBehaviour
     public float BaseDuration => _baseDuration;
     public bool IsRunning => _isRunning;
     public ReadOnlyReactiveProperty<float> Remaining => _remaining;
+    // 시간이 다 돼서 끝났을 때만 발행한다.
     public Observable<Unit> OnEnded => _onEnded;
 
     private void Update()
@@ -26,10 +27,12 @@ public class SessionTimer : MonoBehaviour
             return;
         }
 
+        // Time.timeScale이 0이면 deltaTime도 0이라 일시정지 중에는 시간이 줄지 않는다.
         _remaining.Value = Mathf.Max(0f, _remaining.Value - Time.deltaTime);
         if (_remaining.Value <= 0f)
         {
-            End();
+            _isRunning = false;
+            _onEnded.OnNext(Unit.Default);
         }
     }
 
@@ -53,15 +56,9 @@ public class SessionTimer : MonoBehaviour
         }
     }
 
-    // 시간이 다 되거나, 플레이어가 직접 나갈 때 호출한다.
-    public void End()
+    // 시간 말고 다른 이유(숲을 다 베거나 직접 나감)로 끝날 때 멈춘다. OnEnded는 발행하지 않는다.
+    public void Stop()
     {
-        if (!_isRunning)
-        {
-            return;
-        }
-
         _isRunning = false;
-        _onEnded.OnNext(Unit.Default);
     }
 }
