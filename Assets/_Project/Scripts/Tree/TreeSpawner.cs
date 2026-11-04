@@ -12,7 +12,7 @@ public class TreeSpawner : MonoBehaviour
     [Tooltip("나무 콜라이더 사이에 항상 남겨 둘 길의 폭. 0이면 빽빽해서 베어야 길이 열리고, 플레이어 폭보다 크면 사이로 지나갈 수 있다.")]
     [SerializeField] private float _pathWidth = 0f;
     [Tooltip("격자 위치에서 무작위로 흔드는 거리. 흔들어도 길 폭은 줄어들지 않도록 간격에 반영된다.")]
-    [SerializeField] private float _positionJitter = 0.1f;
+    [SerializeField] private float _positionJitter = 0f;
 
     [Header("비워 둘 곳")]
     [Tooltip("이 지점 주변에는 나무를 놓지 않는다. 플레이어 스폰 지점을 넣는다.")]
@@ -20,8 +20,8 @@ public class TreeSpawner : MonoBehaviour
     [SerializeField] private float _keepClearRadius = 1.5f;
 
     [Header("풀")]
-    [SerializeField] private int _poolDefaultCapacity = 500;
-    [SerializeField] private int _poolMaxSize = 1000;
+    [SerializeField] private int _poolDefaultCapacity = 1100;
+    [SerializeField] private int _poolMaxSize = 1500;
 
     private readonly List<Trees> _spawnedTrees = new();
     private readonly Subject<Trees> _onTreeFelled = new();

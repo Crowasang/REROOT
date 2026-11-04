@@ -1,22 +1,37 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float _moveSpeed = 5f;
-    
+
     private Rigidbody2D _rb2d;
     private Vector2 _moveInput;
+    private Vector2 _facingDirection = Vector2.down;
+
+    // 마지막으로 움직인 방향. 멈춰 있어도 그 방향을 계속 바라본다.
+    public Vector2 FacingDirection => _facingDirection;
 
     private void Awake()
     {
         _rb2d = GetComponent<Rigidbody2D>();
     }
 
+    private void FixedUpdate()
+    {
+        Vector2 movement = _moveInput * (_moveSpeed * Time.fixedDeltaTime);
+
+        _rb2d.MovePosition(_rb2d.position + movement);
+    }
+
     public void OnMove(InputValue value)
     {
         _moveInput = value.Get<Vector2>();
+
+        if (_moveInput.sqrMagnitude > 0.01f)
+        {
+            _facingDirection = _moveInput.normalized;
+        }
     }
 
     // 입력을 끌 때 마지막 이동 입력이 남아 계속 미끄러지지 않도록 멈춘다.
@@ -24,12 +39,5 @@ public class PlayerMovement : MonoBehaviour
     {
         _moveInput = Vector2.zero;
         _rb2d.linearVelocity = Vector2.zero;
-    }
-    
-    private void FixedUpdate()
-    {
-        Vector2 movement = _moveInput * (_moveSpeed * Time.fixedDeltaTime);
-        
-        _rb2d.MovePosition(_rb2d.position + movement);
     }
 }

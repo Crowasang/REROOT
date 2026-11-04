@@ -850,11 +850,11 @@ MonoBehaviour:
   _spawnArea: {fileID: 1170980524}
   _treeRoot: {fileID: 1210819012}
   _pathWidth: 0
-  _positionJitter: 0.1
+  _positionJitter: 0
   _keepClearPoint: {fileID: 973819070}
   _keepClearRadius: 1.5
-  _poolDefaultCapacity: 500
-  _poolMaxSize: 1000
+  _poolDefaultCapacity: 1100
+  _poolMaxSize: 1500
 --- !u!1 &639497841
 GameObject:
   m_ObjectHideFlags: 0

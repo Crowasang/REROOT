@@ -12,7 +12,7 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private float _attacksPerSecond = 1.8f;
 
     [Header("타격 범위")]
-    [Tooltip("플레이어 중심에서 타격 지점까지의 거리. 마우스 방향으로 뻗는다.")]
+    [Tooltip("플레이어 중심에서 타격 지점까지의 거리. 바라보는 방향으로 뻗는다.")]
     [SerializeField] private float _attackReach = 0.8f;
     [SerializeField] private float _attackRadius = 0.5f;
 
@@ -22,14 +22,14 @@ public class PlayerAttack : MonoBehaviour
 
     private readonly Collider2D[] _hitCandidates = new Collider2D[MAX_HIT_CANDIDATES];
     private ContactFilter2D _contactFilter;
-    private Camera _camera;
+    private PlayerMovement _movement;
     private bool _isAttacking;
     private Vector2 _lastAttackPoint;
 
     private void Awake()
     {
-        _contactFilter = new ContactFilter2D().NoFilter();
-        _camera = Camera.main;
+        _contactFilter = ContactFilter2D.noFilter;
+        _movement = GetComponent<PlayerMovement>();
     }
 
     // PlayerInput(Send Messages)이 Attack 액션에서 호출한다.
@@ -47,11 +47,10 @@ public class PlayerAttack : MonoBehaviour
 
         try
         {
-            Vector2 direction = GetAimDirection();
-
             await UniTask.Delay(TimeSpan.FromSeconds(_hitDelay), cancellationToken: token);
 
-            Trees target = FindTarget((Vector2)transform.position + direction * _attackReach);
+            // 휘두르는 도중에 방향을 바꾸면 바뀐 방향으로 맞는다.
+            Trees target = FindTarget((Vector2)transform.position + _movement.FacingDirection * _attackReach);
             if (target != null)
             {
                 target.TakeDamage(_damage);
@@ -68,13 +67,6 @@ public class PlayerAttack : MonoBehaviour
         {
             _isAttacking = false;
         }
-    }
-
-    private Vector2 GetAimDirection()
-    {
-        Vector2 mouseWorld = _camera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-        Vector2 direction = mouseWorld - (Vector2)transform.position;
-        return direction.sqrMagnitude > 0.0001f ? direction.normalized : Vector2.right;
     }
 
     // 타격 지점에 가장 가까운 나무 한 그루를 고른다.

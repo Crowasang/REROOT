@@ -1,11 +1,9 @@
 using R3;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
-    [FormerlySerializedAs("_playerSpwaner")]
     [SerializeField] private PlayerSpawner _playerSpawner;
     [SerializeField] private TreeSpawner _treeSpawner;
     [SerializeField] private MapBoundary _mapBoundary;
@@ -33,7 +31,7 @@ public class GameManager : MonoBehaviour
         _mapBoundary.Build();
         _gameCamera.SetBounds(_mapBoundary.CameraRect);
 
-        _player = _playerSpawner.PlayerSpawn();
+        _player = _playerSpawner.SpawnPlayer();
         _playerInput = _player.GetComponent<PlayerInput>();
         _playerMovement = _player.GetComponent<PlayerMovement>();
 
