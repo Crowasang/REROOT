@@ -38,6 +38,7 @@ Assets/_Project/
 │  └─ Data/       ScriptableObject 정의
 ├─ Data/          ScriptableObject 에셋 (Trees/, Player/, Session/, Audio/ ...)
 ├─ Prefabs/       Player/, Trees/, UI/ ...
+├─ Animations/    애니메이터 컨트롤러, 아바타 마스크 (클립은 Art/Varco/Animations)
 ├─ Scenes/
 ├─ Input/
 ├─ Art/           Materials/ (직접 만든 임시 머티리얼 등)

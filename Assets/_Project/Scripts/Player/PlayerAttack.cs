@@ -14,9 +14,10 @@ public class PlayerAttack : MonoBehaviour
 {
     private const int INITIAL_HIT_BUFFER_SIZE = 32;
 
-    [Header("타이밍 (임시)")]
-    [Tooltip("휘두르기 시작부터 실제로 맞을 때까지의 시간. 나중에 휘두르기 애니메이션의 타격 프레임에 맞춘다.")]
-    [SerializeField] private float _hitDelay = 0.1f;
+    [Header("타이밍")]
+    [Tooltip("한 번 휘두르는 시간 중 실제로 맞는 지점(0~1). 베기 애니메이션에서 도끼가 내려와 닿는 순간에 맞춘다. " +
+             "시간이 아닌 비율이라 공격 속도를 강화해도 동작과 판정이 어긋나지 않는다.")]
+    [SerializeField, Range(0f, 1f)] private float _hitTiming = 0.5f;
 
     private readonly List<IDamageable> _targets = new();
     private readonly Subject<Unit> _onSwing = new();
@@ -75,9 +76,13 @@ public class PlayerAttack : MonoBehaviour
         _isAttacking = true;
         _onSwing.OnNext(Unit.Default);
 
+        // 한 번 휘두르는 시간을 공격 속도에서 구하고, 그 안에서 맞는 시점과 남은 시간을 나눈다.
+        float swingDuration = 1f / _stats.AttacksPerSecond.CurrentValue;
+        float hitDelay = swingDuration * _hitTiming;
+
         try
         {
-            await UniTask.Delay(TimeSpan.FromSeconds(_hitDelay), cancellationToken: token);
+            await UniTask.Delay(TimeSpan.FromSeconds(hitDelay), cancellationToken: token);
 
             // 휘두르는 도중에 방향을 바꾸면 바뀐 방향으로 맞는다.
             Vector3 attackPoint = transform.position
@@ -95,7 +100,7 @@ public class PlayerAttack : MonoBehaviour
             _targets.Clear();
 
             // 공격 속도만큼 다음 공격을 막는다.
-            float cooldown = 1f / _stats.AttacksPerSecond.CurrentValue - _hitDelay;
+            float cooldown = swingDuration - hitDelay;
             if (cooldown > 0f)
             {
                 await UniTask.Delay(TimeSpan.FromSeconds(cooldown), cancellationToken: token);
