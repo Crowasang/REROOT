@@ -99,8 +99,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
   _damage: 1
   _attacksPerSecond: 1.8
-  _attackReach: 0.8
-  _attackRadius: 0.5
+  _attackReach: 0.75
+  _attackRadius: 0.35
   _attackHeight: 0.5
   _hitDelay: 0.1
 --- !u!54 &7196572478591271297
