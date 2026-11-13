@@ -5,14 +5,18 @@ using UnityEngine.Pool;
 
 public class TreeSpawner : MonoBehaviour
 {
-    [SerializeField] private BoxCollider2D _spawnArea;
+    [Tooltip("나무를 깔 영역. 바닥(XZ) 크기만 쓴다.")]
+    [SerializeField] private BoxCollider _spawnArea;
     [SerializeField] private Transform _treeRoot;
 
     [Header("배치")]
-    [Tooltip("나무 콜라이더 사이에 항상 남겨 둘 길의 폭. 0이면 빽빽해서 베어야 길이 열리고, 플레이어 폭보다 크면 사이로 지나갈 수 있다.")]
-    [SerializeField] private float _pathWidth = 0f;
-    [Tooltip("격자 위치에서 무작위로 흔드는 거리. 흔들어도 길 폭은 줄어들지 않도록 간격에 반영된다.")]
+    [Tooltip("나무 밑동 사이의 격자 간격. 3/4 시점이라 콜라이더는 밑동만 덮으므로 간격을 따로 정한다. " +
+             "간격 - 밑동 지름이 플레이어 폭보다 작아야 베지 않고는 지나갈 수 없다.")]
+    [SerializeField] private float _spacing = 1f;
+    [Tooltip("격자 위치에서 무작위로 흔드는 거리. 0이면 고르게 놓인다.")]
     [SerializeField] private float _positionJitter = 0f;
+    [Tooltip("나무마다 Y축으로 무작위 회전. 같은 모델이 반복돼 보이는 것을 줄인다.")]
+    [SerializeField] private bool _randomYaw = true;
 
     [Header("비워 둘 곳")]
     [Tooltip("이 지점 주변에는 나무를 놓지 않는다. 플레이어 스폰 지점을 넣는다.")]
@@ -52,33 +56,35 @@ public class TreeSpawner : MonoBehaviour
         ObjectPool<Trees> pool = GetPool(data.Prefab);
         Bounds bounds = _spawnArea.bounds;
 
-        // 이웃한 두 나무가 서로 반대쪽으로 최대한 흔들려도 길 폭이 남도록 간격을 정한다.
-        float spacing = GetTreeRadius(data.Prefab) * 2f + _pathWidth + _positionJitter * 2f;
-
-        // 영역 안에 들어가는 만큼 격자를 만들고, 남는 여백은 양쪽에 똑같이 나눈다.
-        int columns = Mathf.FloorToInt(bounds.size.x / spacing) + 1;
-        int rows = Mathf.FloorToInt(bounds.size.y / spacing) + 1;
-        Vector2 origin = new(
-            bounds.center.x - (columns - 1) * spacing * 0.5f,
-            bounds.center.y - (rows - 1) * spacing * 0.5f);
+        // 바닥(XZ) 위에 격자를 만들고, 남는 여백은 양쪽에 똑같이 나눈다.
+        int columns = Mathf.FloorToInt(bounds.size.x / _spacing) + 1;
+        int rows = Mathf.FloorToInt(bounds.size.z / _spacing) + 1;
+        Vector3 origin = new(
+            bounds.center.x - (columns - 1) * _spacing * 0.5f,
+            0f,
+            bounds.center.z - (rows - 1) * _spacing * 0.5f);
 
         float clearSqr = _keepClearRadius * _keepClearRadius;
 
-        for (int y = 0; y < rows; y++)
+        for (int z = 0; z < rows; z++)
         {
             for (int x = 0; x < columns; x++)
             {
-                Vector2 position = origin + new Vector2(x, y) * spacing;
+                Vector3 position = origin + new Vector3(x, 0f, z) * _spacing;
 
-                if (_keepClearPoint != null && ((Vector2)_keepClearPoint.position - position).sqrMagnitude < clearSqr)
+                if (IsInKeepClearArea(position, clearSqr))
                 {
                     continue;
                 }
 
-                position += Random.insideUnitCircle * _positionJitter;
+                Vector2 jitter = Random.insideUnitCircle * _positionJitter;
+                position += new Vector3(jitter.x, 0f, jitter.y);
+
+                // 같은 모델이 똑같은 방향으로 늘어서 보이지 않도록 제자리에서 돌린다.
+                Quaternion rotation = _randomYaw ? Quaternion.Euler(0f, Random.Range(0f, 360f), 0f) : Quaternion.identity;
 
                 Trees tree = pool.Get();
-                tree.transform.SetPositionAndRotation(position, Quaternion.identity);
+                tree.transform.SetPositionAndRotation(position, rotation);
                 _spawnedTrees.Add(tree);
             }
         }
@@ -97,17 +103,17 @@ public class TreeSpawner : MonoBehaviour
         _spawnedTrees.Clear();
     }
 
-    // 나무가 길을 막는 범위. 나무 종류마다 크기가 다르므로 프리팹의 콜라이더에서 읽는다.
-    private static float GetTreeRadius(Trees prefab)
+    // 높이는 무시하고 바닥 위 거리로만 잰다.
+    private bool IsInKeepClearArea(Vector3 position, float clearSqr)
     {
-        if (prefab.TryGetComponent(out CircleCollider2D circle))
+        if (_keepClearPoint == null)
         {
-            Vector3 scale = prefab.transform.localScale;
-            return circle.radius * Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y));
+            return false;
         }
 
-        Debug.LogWarning($"[TreeSpawner] {prefab.name}에 CircleCollider2D가 없어 반지름을 0.5로 가정합니다.", prefab);
-        return 0.5f;
+        Vector3 offset = _keepClearPoint.position - position;
+        offset.y = 0f;
+        return offset.sqrMagnitude < clearSqr;
     }
 
     private ObjectPool<Trees> GetPool(Trees prefab)
