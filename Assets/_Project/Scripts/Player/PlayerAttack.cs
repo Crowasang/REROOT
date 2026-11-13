@@ -11,25 +11,28 @@ public class PlayerAttack : MonoBehaviour
     private const int INITIAL_HIT_BUFFER_SIZE = 32;
 
     [SerializeField] private int _damage = 1;
+    [Tooltip("공격 버튼을 누르고 있는 동안 1초에 휘두르는 횟수. 공격 속도 강화로 올린다.")]
     [SerializeField] private float _attacksPerSecond = 1.8f;
 
     [Header("타격 범위")]
-    [Tooltip("플레이어 중심에서 타격 범위 중심까지의 거리. 바라보는 방향으로 뻗는다.")]
-    [SerializeField] private float _attackReach = 0.8f;
-    [Tooltip("타격 범위의 반지름. 범위에 걸친 나무는 모두 맞는다.")]
-    [SerializeField] private float _attackRadius = 0.5f;
+    [Tooltip("플레이어 중심에서 타격 범위 중심까지의 거리. 바라보는 방향으로 뻗는다. " +
+             "나무에 붙어 섰을 때(중심 거리 약 0.65) 범위 중심이 밑동 근처에 오도록 둔다.")]
+    [SerializeField] private float _attackReach = 0.75f;
+    [Tooltip("타격 범위의 반지름. 범위에 걸친 나무는 모두 맞는다. 강화로 넓힌다. " +
+             "나무 간격 1, 밑동 반지름 0.3 기준: 0.35면 정면 1그루·나무 사이 2그루, 0.65를 넘으면 3그루 이상.")]
+    [SerializeField] private float _attackRadius = 0.35f;
     [Tooltip("바닥에서 타격 범위 중심까지의 높이. 나무 밑동 콜라이더에 닿는 높이로 둔다.")]
     [SerializeField] private float _attackHeight = 0.5f;
 
     [Header("타이밍 (임시)")]
-    [Tooltip("클릭 후 실제로 맞을 때까지의 시간. 나중에 휘두르기 애니메이션의 타격 프레임에 맞춘다.")]
+    [Tooltip("휘두르기 시작부터 실제로 맞을 때까지의 시간. 나중에 휘두르기 애니메이션의 타격 프레임에 맞춘다.")]
     [SerializeField] private float _hitDelay = 0.1f;
 
     private readonly List<Trees> _targets = new();
     private Collider[] _hitCandidates = new Collider[INITIAL_HIT_BUFFER_SIZE];
     private PlayerMovement _movement;
+    private InputAction _attackAction;
     private bool _isAttacking;
-    private bool _isPointerOverUi;
     private Vector3 _lastAttackPoint;
 
     private void Awake()
@@ -37,20 +40,28 @@ public class PlayerAttack : MonoBehaviour
         _movement = GetComponent<PlayerMovement>();
     }
 
-    // 입력 콜백 안에서는 UI 판정이 한 프레임 늦으므로 Update에서 미리 읽어 둔다.
-    private void Update()
+    // PlayerInput이 OnEnable에서 액션을 준비한 뒤에 가져온다.
+    private void Start()
     {
-        _isPointerOverUi = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+        _attackAction = GetComponent<PlayerInput>().actions["Attack"];
     }
 
-    // PlayerInput(Send Messages)이 Attack 액션에서 호출한다.
-    public void OnAttack(InputValue value)
+    // 공격 버튼을 누르고 있는 동안 공격 속도에 맞춰 계속 휘두른다.
+    // 입력이 꺼지면(일시정지, 세션 종료) 액션도 꺼져서 IsPressed가 false가 된다.
+    private void Update()
     {
-        // 일시정지 버튼 같은 UI를 누른 클릭으로는 휘두르지 않는다.
-        if (value.isPressed && !_isAttacking && !_isPointerOverUi)
+        if (_isAttacking || _attackAction == null || !_attackAction.IsPressed() || IsPointerOverUi())
         {
-            AttackAsync(destroyCancellationToken).Forget();
+            return;
         }
+
+        AttackAsync(destroyCancellationToken).Forget();
+    }
+
+    // 일시정지 버튼 같은 UI 위에서 누른 것으로는 휘두르지 않는다.
+    private static bool IsPointerOverUi()
+    {
+        return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
     }
 
     private async UniTaskVoid AttackAsync(CancellationToken token)
