@@ -38,10 +38,12 @@ Assets/_Project/
 ├─ Prefabs/       Player/, Trees/, UI/ ...
 ├─ Scenes/
 ├─ Input/
-├─ Art/           Models/, Materials/, Textures/
+├─ Art/           Materials/ (직접 만든 임시 머티리얼 등)
+│  └─ Varco/      VARCO 3D로 생성했거나 외부에서 가져온 모델·텍스처 (깃에 올리지 않음)
 └─ Audio/
 ```
 
+- VARCO 3D로 뽑았거나 외부에서 가져온 에셋은 `Art/Varco/` 아래에만 둔다. 이 폴더는 `.gitignore`에 들어 있어 커밋되지 않는다. 다른 PC에서 작업하려면 폴더를 `.meta` 파일까지 통째로 복사해야 프리팹 참조가 유지된다.
 - 데이터 에셋 이름: `종류_번호_이름` (예: `Tree_01_Birch`, `Tree_02_Pine`).
 - 파일과 폴더를 옮길 때는 Unity 에디터 안에서 옮기거나, 탐색기/git으로 옮길 때 `.meta` 파일을 같이 옮긴다. `.meta`가 빠지면 참조가 끊긴다.
 

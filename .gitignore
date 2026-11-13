@@ -73,3 +73,8 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# VARCO 3D로 생성했거나 외부에서 가져온 아트 에셋은 깃에 올리지 않는다.
+# 다른 PC에서 작업하려면 이 폴더를 .meta 파일까지 통째로 직접 복사해야 프리팹 참조가 유지된다.
+/[Aa]ssets/_Project/Art/Varco/
+/[Aa]ssets/_Project/Art/Varco.meta
