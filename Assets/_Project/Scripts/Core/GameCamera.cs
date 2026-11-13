@@ -3,7 +3,7 @@ using UnityEngine;
 
 // 기울어진 카메라가 플레이어를 따라간다.
 // 카메라를 직접 가두지 않고, 카메라가 따라가는 지점(포커스)을 바닥 범위 안에 가둔다.
-public class GameCamera : MonoBehaviour
+public class GameCamera : MonoBehaviour, ICameraController
 {
     [SerializeField] private CinemachineCamera _camera;
     [Tooltip("카메라가 실제로 따라가는 지점. 플레이어 위치를 범위 안으로 잘라서 옮긴다.")]

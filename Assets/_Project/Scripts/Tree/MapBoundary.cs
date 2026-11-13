@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // 벌목 영역 바깥을 피해를 받지 않는 나무로 빈틈없이 둘러싼다.
-public class MapBoundary : MonoBehaviour
+public class MapBoundary : MonoBehaviour, IMapBoundary
 {
     [Tooltip("나무를 까는 영역. 바닥(XZ) 크기만 쓴다.")]
     [SerializeField] private BoxCollider _spawnArea;

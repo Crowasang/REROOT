@@ -1,14 +1,12 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using VContainer;
 
 // 바닥(XZ 평면) 위를 걷는다. 입력의 위쪽(W)이 화면 안쪽(+Z)이다.
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] private float _moveSpeed = 5f;
-    [Tooltip("바라보는 방향으로 몸을 돌리는 속도(도/초)")]
-    [SerializeField] private float _turnSpeed = 900f;
-
     private Rigidbody _rb;
+    private PlayerStats _stats;
     private Vector3 _moveDirection;
     private Vector3 _facingDirection = Vector3.back;
 
@@ -22,10 +20,22 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _rb.MovePosition(_rb.position + _moveDirection * (_moveSpeed * Time.fixedDeltaTime));
+        if (_stats == null)
+        {
+            return;
+        }
+
+        // 강화로 속도가 바뀌어도 바로 반영되도록 매번 현재 값을 읽는다.
+        _rb.MovePosition(_rb.position + _moveDirection * (_stats.MoveSpeed.CurrentValue * Time.fixedDeltaTime));
 
         Quaternion targetRotation = Quaternion.LookRotation(_facingDirection, Vector3.up);
-        _rb.MoveRotation(Quaternion.RotateTowards(_rb.rotation, targetRotation, _turnSpeed * Time.fixedDeltaTime));
+        _rb.MoveRotation(Quaternion.RotateTowards(_rb.rotation, targetRotation, _stats.TurnSpeed.CurrentValue * Time.fixedDeltaTime));
+    }
+
+    [Inject]
+    public void Construct(PlayerStats stats)
+    {
+        _stats = stats;
     }
 
     // PlayerInput(Send Messages)이 Move 액션에서 호출한다.
@@ -40,7 +50,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    // 입력을 끌 때 마지막 이동 입력이 남아 계속 미끄러지지 않도록 멈춘다.
     public void Stop()
     {
         _moveDirection = Vector3.zero;

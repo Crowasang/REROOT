@@ -3,8 +3,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 세션이 끝나면 뜨는 패널. 강화 패널이 생기면 이 자리를 대신하거나 여기서 넘어간다.
-public class SessionEndPanel : MonoBehaviour
+// 세션 결과 창 뷰
+public class SessionEndPanel : MonoBehaviour, ISessionEndView
 {
     [SerializeField] private TMP_Text _titleText;
     [SerializeField] private TMP_Text _woodGainedText;
@@ -12,10 +12,10 @@ public class SessionEndPanel : MonoBehaviour
 
     public Observable<Unit> OnContinue => _continueButton.OnClickAsObservable();
 
-    public void Show(SessionEndReason reason, int woodGained)
+    public void Show(SessionResult result)
     {
-        _titleText.text = GetTitle(reason);
-        _woodGainedText.text = $"Wood +{woodGained}";
+        _titleText.text = GetTitle(result.Reason);
+        _woodGainedText.text = $"Wood +{result.WoodGained}";
         gameObject.SetActive(true);
     }
 
