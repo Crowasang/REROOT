@@ -1,26 +1,22 @@
+using System;
 using R3;
 using UnityEngine;
+using VContainer.Unity;
 
-// 숲에 머물 수 있는 시간. 화면에는 플레이어 체력 바처럼 보여준다.
-public class SessionTimer : MonoBehaviour
+// 숲에 머물 수 있는 남은 시간. 화면에는 플레이어 체력 바처럼 보여준다.
+// 컨테이너가 매 프레임 Tick을 불러 준다(ITickable).
+public sealed class SessionTimer : ISessionTimer, ITickable, IDisposable
 {
-    [SerializeField] private float _baseDuration = 30f;
-    [Tooltip("나무 한 그루를 벨 때마다 늘어나는 시간")]
-    [SerializeField] private float _bonusPerTree = 1f;
-
-    [Header("상태")]
-    [SerializeField, ReadOnly] private bool _isRunning;
-
     private readonly ReactiveProperty<float> _remaining = new(0f);
-    private readonly Subject<Unit> _onEnded = new();
+    private readonly Subject<Unit> _onTimeUp = new();
+    private bool _isRunning;
+    private float _duration;
 
-    public float BaseDuration => _baseDuration;
-    public bool IsRunning => _isRunning;
+    public float Duration => _duration;
     public ReadOnlyReactiveProperty<float> Remaining => _remaining;
-    // 시간이 다 돼서 끝났을 때만 발행한다.
-    public Observable<Unit> OnEnded => _onEnded;
+    public Observable<Unit> OnTimeUp => _onTimeUp;
 
-    private void Update()
+    public void Tick()
     {
         if (!_isRunning)
         {
@@ -32,33 +28,33 @@ public class SessionTimer : MonoBehaviour
         if (_remaining.Value <= 0f)
         {
             _isRunning = false;
-            _onEnded.OnNext(Unit.Default);
+            _onTimeUp.OnNext(Unit.Default);
         }
     }
 
-    private void OnDestroy()
+    public void Begin(float duration)
     {
-        _remaining.Dispose();
-        _onEnded.Dispose();
-    }
-
-    public void Begin()
-    {
-        _remaining.Value = _baseDuration;
+        _duration = duration;
+        _remaining.Value = duration;
         _isRunning = true;
     }
 
-    public void AddTreeBonus()
+    public void AddTime(float seconds)
     {
         if (_isRunning)
         {
-            _remaining.Value += _bonusPerTree;
+            _remaining.Value += seconds;
         }
     }
 
-    // 시간 말고 다른 이유(숲을 다 베거나 직접 나감)로 끝날 때 멈춘다. OnEnded는 발행하지 않는다.
     public void Stop()
     {
         _isRunning = false;
+    }
+
+    public void Dispose()
+    {
+        _remaining.Dispose();
+        _onTimeUp.Dispose();
     }
 }

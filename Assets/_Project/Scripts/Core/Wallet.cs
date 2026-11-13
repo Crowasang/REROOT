@@ -1,20 +1,20 @@
+using System;
 using R3;
-using UnityEngine;
 
-// 플레이어가 가진 재화. 강화 구매, 저장이 여기서 값을 읽고 쓴다.
-public class Wallet : MonoBehaviour
+// 플레이어가 가진 재화. 지금은 씬 안에서만 살지만, 세이브를 붙일 때 씬을 넘어 유지되는 계층으로 옮긴다.
+public sealed class Wallet : IWallet, IDisposable
 {
     private readonly ReactiveProperty<int> _wood = new(0);
 
     public ReadOnlyReactiveProperty<int> Wood => _wood;
 
-    private void OnDestroy()
-    {
-        _wood.Dispose();
-    }
-
     public void AddWood(int amount)
     {
         _wood.Value += amount;
+    }
+
+    public void Dispose()
+    {
+        _wood.Dispose();
     }
 }

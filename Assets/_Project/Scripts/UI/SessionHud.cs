@@ -3,11 +3,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SessionHud : MonoBehaviour
+// 화면 표시만 맡는 뷰. 어떤 시스템에서 값이 오는지는 모르고, UIManager가 값을 넣어 준다.
+public class SessionHud : MonoBehaviour, IHudView
 {
-    [SerializeField] private SessionTimer _sessionTimer;
-    [SerializeField] private Wallet _wallet;
-
     [SerializeField] private Image _timeFill;
     [SerializeField] private TMP_Text _timeText;
     [SerializeField] private TMP_Text _woodText;
@@ -15,21 +13,14 @@ public class SessionHud : MonoBehaviour
 
     public Observable<Unit> OnPauseClicked => _pauseButton.OnClickAsObservable();
 
-    private void Start()
+    public void SetTime(float ratio, int seconds)
     {
-        // 바는 매 프레임, 글자는 초가 바뀔 때만 갱신한다.
-        _sessionTimer.Remaining
-            .Subscribe(remaining => _timeFill.fillAmount = Mathf.Clamp01(remaining / _sessionTimer.BaseDuration))
-            .AddTo(this);
+        _timeFill.fillAmount = Mathf.Clamp01(ratio);
+        _timeText.text = $"{seconds}s";
+    }
 
-        _sessionTimer.Remaining
-            .Select(Mathf.CeilToInt)
-            .DistinctUntilChanged()
-            .Subscribe(seconds => _timeText.text = $"{seconds}s")
-            .AddTo(this);
-
-        _wallet.Wood
-            .Subscribe(wood => _woodText.text = $"Wood {wood}")
-            .AddTo(this);
+    public void SetWood(int wood)
+    {
+        _woodText.text = $"Wood {wood}";
     }
 }
