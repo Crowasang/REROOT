@@ -14,6 +14,7 @@ public abstract class Trees : MonoBehaviour, IDamageable
     [Header("상태")]
     [SerializeField, ReadOnly] private int _currentHp;
 
+    private readonly Subject<Trees> _onHit = new();
     private readonly Subject<Trees> _onFelled = new();
     private CancellationTokenSource _activeCts;
 
@@ -21,6 +22,9 @@ public abstract class Trees : MonoBehaviour, IDamageable
     public int CurrentHp => _currentHp;
     public bool IsFelled => _currentHp <= 0;
     public bool CanTakeDamage => !IsFelled;
+
+    // 맞을 때마다 발행한다. 이번 타격으로 쓰러졌으면 IsFelled가 true다.
+    public Observable<Trees> OnHit => _onHit;
 
     // 쓰러지는 연출까지 끝나서 풀에 돌아갈 준비가 됐을 때 발행한다.
     public Observable<Trees> OnFelled => _onFelled;
@@ -40,6 +44,7 @@ public abstract class Trees : MonoBehaviour, IDamageable
 
     protected virtual void OnDestroy()
     {
+        _onHit.Dispose();
         _onFelled.Dispose();
     }
 
@@ -59,6 +64,7 @@ public abstract class Trees : MonoBehaviour, IDamageable
         }
 
         _currentHp = Mathf.Max(0, _currentHp - damage);
+        _onHit.OnNext(this);
 
         if (IsFelled)
         {

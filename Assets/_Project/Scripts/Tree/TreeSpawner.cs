@@ -29,11 +29,13 @@ public class TreeSpawner : MonoBehaviour, IForest
 
     private readonly List<Trees> _spawnedTrees = new();
     private readonly List<Pose> _poses = new();
+    private readonly Subject<Trees> _onTreeHit = new();
     private readonly Subject<Trees> _onTreeFelled = new();
     private readonly Subject<Unit> _onCleared = new();
     private TreePool _pool;
 
     public int RemainingCount => _spawnedTrees.Count;
+    public Observable<Trees> OnTreeHit => _onTreeHit;
     public Observable<Trees> OnTreeFelled => _onTreeFelled;
     public Observable<Unit> OnCleared => _onCleared;
 
@@ -42,12 +44,16 @@ public class TreeSpawner : MonoBehaviour, IForest
         Transform root = _treeRoot != null ? _treeRoot : transform;
 
         // 인스턴스는 재사용되므로 처음 만들 때 한 번만 구독한다.
-        _pool = new TreePool(root, _poolDefaultCapacity, _poolMaxSize,
-            tree => tree.OnFelled.Subscribe(HandleTreeFelled).AddTo(tree));
+        _pool = new TreePool(root, _poolDefaultCapacity, _poolMaxSize, tree =>
+        {
+            tree.OnHit.Subscribe(_onTreeHit.OnNext).AddTo(tree);
+            tree.OnFelled.Subscribe(HandleTreeFelled).AddTo(tree);
+        });
     }
 
     private void OnDestroy()
     {
+        _onTreeHit.Dispose();
         _onTreeFelled.Dispose();
         _onCleared.Dispose();
     }
