@@ -12,7 +12,7 @@ public class PlayerStatsData : ScriptableObject
     [Header("공격")]
     [SerializeField] private int _damage = 1;
     [Tooltip("공격 버튼을 누르고 있는 동안 1초에 휘두르는 횟수")]
-    [SerializeField] private float _attacksPerSecond = 1.8f;
+    [SerializeField] private float _attacksPerSecond = 1.4f;
     [Tooltip("플레이어 중심에서 타격 범위 중심까지의 거리. 나무에 붙어 섰을 때(중심 거리 약 0.65) 범위 중심이 밑동 근처에 오도록 둔다.")]
     [SerializeField] private float _attackReach = 0.75f;
     [Tooltip("타격 범위의 반지름. 나무 간격 1, 밑동 반지름 0.3 기준: 0.35면 정면 1그루·나무 사이 2그루, 0.65를 넘으면 3그루 이상.")]
