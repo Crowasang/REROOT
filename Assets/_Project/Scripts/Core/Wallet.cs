@@ -1,8 +1,8 @@
 using System;
 using R3;
 
-// 플레이어가 가진 재화. 지금은 씬 안에서만 살지만, 세이브를 붙일 때 씬을 넘어 유지되는 계층으로 옮긴다.
-public sealed class Wallet : IWallet, IDisposable
+// 플레이어가 가진 재화. Root 계층에 있어 씬이 바뀌어도 유지되고, ISaveable로 저장된다.
+public sealed class Wallet : IWallet, ISaveable, IDisposable
 {
     private readonly ReactiveProperty<int> _wood = new(0);
 
@@ -10,7 +10,31 @@ public sealed class Wallet : IWallet, IDisposable
 
     public void AddWood(int amount)
     {
-        _wood.Value += amount;
+        if (amount > 0)
+        {
+            _wood.Value += amount;
+        }
+    }
+
+    public bool TrySpendWood(int amount)
+    {
+        if (amount < 0 || _wood.Value < amount)
+        {
+            return false;
+        }
+
+        _wood.Value -= amount;
+        return true;
+    }
+
+    public void Load(SaveData data)
+    {
+        _wood.Value = Math.Max(0, data.Wood);
+    }
+
+    public void Write(SaveData data)
+    {
+        data.Wood = _wood.Value;
     }
 
     public void Dispose()

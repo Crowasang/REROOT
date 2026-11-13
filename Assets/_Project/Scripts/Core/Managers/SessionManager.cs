@@ -11,6 +11,7 @@ public sealed class SessionManager : ISessionService, IDisposable
     private readonly IWallet _wallet;
     private readonly IPlayerSpawner _playerSpawner;
     private readonly ICameraController _camera;
+    private readonly IStatService _stats;
     private readonly SessionSettings _settings;
 
     private readonly ReactiveProperty<bool> _isActive = new(false);
@@ -18,6 +19,7 @@ public sealed class SessionManager : ISessionService, IDisposable
     private readonly Subject<SessionResult> _onEnded = new();
     private readonly CompositeDisposable _disposables = new();
     private int _woodAtStart;
+    private SessionResult _lastResult;
 
     public SessionManager(
         IForest forest,
@@ -25,6 +27,7 @@ public sealed class SessionManager : ISessionService, IDisposable
         IWallet wallet,
         IPlayerSpawner playerSpawner,
         ICameraController camera,
+        IStatService stats,
         SessionSettings settings)
     {
         _forest = forest;
@@ -32,6 +35,7 @@ public sealed class SessionManager : ISessionService, IDisposable
         _wallet = wallet;
         _playerSpawner = playerSpawner;
         _camera = camera;
+        _stats = stats;
         _settings = settings;
 
         _timer.OnTimeUp.Subscribe(_ => EndSession(SessionEndReason.TimeUp)).AddTo(_disposables);
@@ -41,6 +45,7 @@ public sealed class SessionManager : ISessionService, IDisposable
     public ReadOnlyReactiveProperty<bool> IsActive => _isActive;
     public Observable<Unit> OnStarted => _onStarted;
     public Observable<SessionResult> OnEnded => _onEnded;
+    public SessionResult LastResult => _lastResult;
 
     public void StartSession()
     {
@@ -54,7 +59,8 @@ public sealed class SessionManager : ISessionService, IDisposable
         }
 
         _woodAtStart = _wallet.Wood.CurrentValue;
-        _timer.Begin(_settings.BaseDuration);
+        // "숲에 머무는 시간 +5초" 같은 강화가 반영되도록 스탯을 거친다.
+        _timer.Begin(_stats.Evaluate(StatType.SessionDuration, _settings.BaseDuration));
         _isActive.Value = true;
         _onStarted.OnNext(Unit.Default);
     }
@@ -68,7 +74,8 @@ public sealed class SessionManager : ISessionService, IDisposable
 
         _timer.Stop();
         _isActive.Value = false;
-        _onEnded.OnNext(new SessionResult(reason, _wallet.Wood.CurrentValue - _woodAtStart));
+        _lastResult = new SessionResult(reason, _wallet.Wood.CurrentValue - _woodAtStart);
+        _onEnded.OnNext(_lastResult);
     }
 
     public void Dispose()

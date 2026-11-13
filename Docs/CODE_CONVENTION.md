@@ -29,18 +29,23 @@
 ```
 Assets/_Project/
 ├─ Scripts/
-│  ├─ Core/       게임 흐름, 공용 유틸 (Interfaces/, Managers/, GameLifetimeScope)
+│  ├─ Core/       공용 뼈대 (Interfaces/, Managers/, GameLifetimeScope, RootLifetimeScope)
+│  │  ├─ GameFlow/  게임 단계 상태 머신 (IGameState, GameStateMachine, ForestState, ResultState)
+│  │  ├─ Save/      세이브 (SaveData, SaveService, PlayerRecords, AutoSaveManager)
+│  │  ├─ Scenes/    씬 전환 (SceneId, SceneLoader)
+│  │  └─ Stats/     강화가 바꾸는 수치 (StatType, StatService)
 │  ├─ Player/     플레이어 이동, 벌목
 │  ├─ Tree/       나무, 나무 스폰
-│  ├─ Upgrade/    강화 시스템
+│  ├─ Upgrade/    강화 레벨·구매 (UpgradeService)
 │  ├─ UI/         UI 패널, HUD (Views/에 뷰 인터페이스)
 │  ├─ Audio/      소리 재생, 소리 결정(AudioManager)
-│  └─ Data/       ScriptableObject 정의
-├─ Data/          ScriptableObject 에셋 (Trees/, Player/, Session/, Audio/ ...)
-├─ Prefabs/       Player/, Trees/, UI/ ...
+│  └─ Data/       ScriptableObject 정의 (UpgradeData, UpgradeCatalog 포함)
+├─ Data/          ScriptableObject 에셋 (Trees/, Player/, Session/, Audio/, Upgrades/ ...)
+├─ Prefabs/       Player/, Trees/, UI/, Core/(RootLifetimeScope) ...
 ├─ Animations/    애니메이터 컨트롤러, 아바타 마스크 (클립은 Art/Varco/Animations)
 ├─ Scenes/
 ├─ Input/
+├─ Settings/      VContainerSettings
 ├─ Art/           Materials/ (직접 만든 임시 머티리얼 등)
 │  └─ Varco/      VARCO로 생성했거나 외부에서 가져온 모델·텍스처·소리 (깃에 올리지 않음, Audio/Sfx, Audio/Music 포함)
 └─ Audio/         직접 만든 소리 (VARCO로 만든 소리는 Art/Varco/Audio)

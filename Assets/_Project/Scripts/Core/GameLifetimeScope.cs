@@ -35,10 +35,14 @@ public class GameLifetimeScope : LifetimeScope
         builder.RegisterInstance(_sessionSettings);
         builder.RegisterInstance(_soundLibrary);
 
-        // 상태
+        // 상태 (재화·강화·기록·저장은 부모인 RootLifetimeScope에 있다)
         builder.Register<PlayerStats>(Lifetime.Singleton);
-        builder.Register<Wallet>(Lifetime.Singleton).AsImplementedInterfaces();
         builder.RegisterEntryPoint<SessionTimer>().AsSelf();
+
+        // 게임 흐름: 새 단계(강화, 로딩 등)는 상태 클래스를 만들어 여기 한 줄 추가한다.
+        builder.RegisterEntryPoint<GameStateMachine>();
+        builder.Register<ForestState>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+        builder.Register<ResultState>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
 
         // 씬 오브젝트
         builder.RegisterComponent(_treeSpawner).AsImplementedInterfaces();
@@ -59,6 +63,8 @@ public class GameLifetimeScope : LifetimeScope
         builder.RegisterEntryPoint<PlayerControlManager>();
         builder.RegisterEntryPoint<UIManager>();
         builder.RegisterEntryPoint<AudioManager>();
+        builder.RegisterEntryPoint<RecordManager>();
+        builder.RegisterEntryPoint<SessionSaveTrigger>();
         builder.RegisterEntryPoint<GameInitializer>();
     }
 }
