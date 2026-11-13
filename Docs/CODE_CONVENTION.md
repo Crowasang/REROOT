@@ -29,19 +29,20 @@
 ```
 Assets/_Project/
 ├─ Scripts/
-│  ├─ Core/       게임 흐름, 매니저, 공용 유틸
+│  ├─ Core/       게임 흐름, 공용 유틸 (Interfaces/, Managers/, GameLifetimeScope)
 │  ├─ Player/     플레이어 이동, 벌목
 │  ├─ Tree/       나무, 나무 스폰
 │  ├─ Upgrade/    강화 시스템
-│  ├─ UI/         UI 패널, HUD
+│  ├─ UI/         UI 패널, HUD (Views/에 뷰 인터페이스)
+│  ├─ Audio/      소리 재생, 소리 결정(AudioManager)
 │  └─ Data/       ScriptableObject 정의
-├─ Data/          ScriptableObject 에셋 (Trees/, Upgrades/ ...)
+├─ Data/          ScriptableObject 에셋 (Trees/, Player/, Session/, Audio/ ...)
 ├─ Prefabs/       Player/, Trees/, UI/ ...
 ├─ Scenes/
 ├─ Input/
 ├─ Art/           Materials/ (직접 만든 임시 머티리얼 등)
-│  └─ Varco/      VARCO 3D로 생성했거나 외부에서 가져온 모델·텍스처 (깃에 올리지 않음)
-└─ Audio/
+│  └─ Varco/      VARCO로 생성했거나 외부에서 가져온 모델·텍스처·소리 (깃에 올리지 않음, Audio/Sfx, Audio/Music 포함)
+└─ Audio/         직접 만든 소리 (VARCO로 만든 소리는 Art/Varco/Audio)
 ```
 
 - VARCO 3D로 뽑았거나 외부에서 가져온 에셋은 `Art/Varco/` 아래에만 둔다. 이 폴더는 `.gitignore`에 들어 있어 커밋되지 않는다. 다른 PC에서 작업하려면 폴더를 `.meta` 파일까지 통째로 복사해야 프리팹 참조가 유지된다.

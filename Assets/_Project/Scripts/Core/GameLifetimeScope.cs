@@ -10,12 +10,14 @@ public class GameLifetimeScope : LifetimeScope
     [Header("데이터")]
     [SerializeField] private PlayerStatsData _playerStatsData;
     [SerializeField] private SessionSettings _sessionSettings;
+    [SerializeField] private SoundLibrary _soundLibrary;
 
     [Header("씬 오브젝트")]
     [SerializeField] private TreeSpawner _treeSpawner;
     [SerializeField] private MapBoundary _mapBoundary;
     [SerializeField] private GameCamera _gameCamera;
     [SerializeField] private PlayerSpawner _playerSpawner;
+    [SerializeField] private AudioPlayer _audioPlayer;
 
     [Header("UI")]
     [SerializeField] private SessionHud _sessionHud;
@@ -31,6 +33,7 @@ public class GameLifetimeScope : LifetimeScope
         // 데이터
         builder.RegisterInstance(_playerStatsData);
         builder.RegisterInstance(_sessionSettings);
+        builder.RegisterInstance(_soundLibrary);
 
         // 상태
         builder.Register<PlayerStats>(Lifetime.Singleton);
@@ -42,6 +45,7 @@ public class GameLifetimeScope : LifetimeScope
         builder.RegisterComponent(_playerSpawner).AsImplementedInterfaces();
         builder.RegisterComponent(_mapBoundary).AsImplementedInterfaces();
         builder.RegisterComponent(_gameCamera).AsImplementedInterfaces();
+        builder.RegisterComponent(_audioPlayer).AsImplementedInterfaces();
 
         // 뷰
         builder.RegisterComponent(_sessionHud).AsImplementedInterfaces();
@@ -54,6 +58,7 @@ public class GameLifetimeScope : LifetimeScope
         builder.RegisterEntryPoint<RewardManager>();
         builder.RegisterEntryPoint<PlayerControlManager>();
         builder.RegisterEntryPoint<UIManager>();
+        builder.RegisterEntryPoint<AudioManager>();
         builder.RegisterEntryPoint<GameInitializer>();
     }
 }

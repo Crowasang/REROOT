@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1764653569703e24193e89472817e22b, type: 3}
+  m_Name: SoundLibrary_01_Default
+  m_EditorClassIdentifier: Assembly-CSharp::SoundLibrary
+  _sfx:
+  - _id: 0
+    _clips:
+    - {fileID: 8300000, guid: a0aab1969185de54ab9785d9d04ad6c8, type: 3}
+    - {fileID: 8300000, guid: 512d47b2032ca9146816c602d6a76e2f, type: 3}
+    - {fileID: 8300000, guid: 48ceb6ca703772a42a7654b6a761a6e8, type: 3}
+    - {fileID: 8300000, guid: 8d75f0c3e42ba7646ae0b85349c89df8, type: 3}
+    _volume: 0.55
+    _pitchVariation: 0.08
+    _minInterval: 0.05
+  - _id: 1
+    _clips:
+    - {fileID: 8300000, guid: 5b05806b2fe255d4c9317582a2302d1b, type: 3}
+    - {fileID: 8300000, guid: 3d1bf3ccd6804b943b32c90bf8cb3650, type: 3}
+    - {fileID: 8300000, guid: ae485244ec74c384baec2c3e2b82b0a2, type: 3}
+    - {fileID: 8300000, guid: 3d5b1ce906039174b94a303d0b4c2f04, type: 3}
+    _volume: 0.9
+    _pitchVariation: 0.08
+    _minInterval: 0.04
+  - _id: 2
+    _clips:
+    - {fileID: 8300000, guid: bc2961bb84c1ecd44bc6ba2c0fe5dbb2, type: 3}
+    - {fileID: 8300000, guid: 5c070e3da25c6fb4b8d2fd5190207efa, type: 3}
+    _volume: 0.85
+    _pitchVariation: 0.05
+    _minInterval: 0.1
+  - _id: 3
+    _clips:
+    - {fileID: 8300000, guid: 4f3c4006a6398f64cb9c58ed7d8a61a3, type: 3}
+    - {fileID: 8300000, guid: d7ec5fb31068a8b48aa5c3fa9629741f, type: 3}
+    - {fileID: 8300000, guid: 1a59f425581a6694f9c79fef78d31a9f, type: 3}
+    _volume: 0.6
+    _pitchVariation: 0.06
+    _minInterval: 0.05
+  - _id: 4
+    _clips:
+    - {fileID: 8300000, guid: 4f802cf158951504fbbb2d46c34d9b32, type: 3}
+    _volume: 0.7
+    _pitchVariation: 0.03
+    _minInterval: 0.05
+  - _id: 5
+    _clips:
+    - {fileID: 8300000, guid: 1206e1c79d0c52c4981658b828489cfe, type: 3}
+    _volume: 0.8
+    _pitchVariation: 0
+    _minInterval: 0.5
+  - _id: 6
+    _clips:
+    - {fileID: 8300000, guid: b8a9f46b655dfb24cb58ab14839ef616, type: 3}
+    _volume: 0.85
+    _pitchVariation: 0
+    _minInterval: 0.5
+  _music:
+  - _id: 0
+    _clip: {fileID: 8300000, guid: 0d922befb70810b4bb3da8855ff8c86e, type: 3}
+    _volume: 0.4

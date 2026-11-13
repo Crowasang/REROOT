@@ -6,7 +6,10 @@ public interface IForest
     // 아직 다 쓰러지지 않은 나무 수
     int RemainingCount { get; }
 
-    // 나무 한 그루가 다 쓰러졌을 때. 보상, 시간 보너스 등이 구독한다.
+    // 나무가 맞을 때마다(쓰러지는 타격 포함, IsFelled로 구분). 효과음, 타격 이펙트가 구독한다.
+    Observable<Trees> OnTreeHit { get; }
+
+    // 나무 한 그루가 쓰러지는 연출까지 끝났을 때. 보상, 시간 보너스 등이 구독한다.
     Observable<Trees> OnTreeFelled { get; }
 
     // 마지막 나무가 쓰러졌을 때. OnTreeFelled 구독자가 모두 처리된 뒤에 발행된다.

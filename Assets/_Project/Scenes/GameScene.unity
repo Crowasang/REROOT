@@ -825,10 +825,12 @@ MonoBehaviour:
   autoInjectGameObjects: []
   _playerStatsData: {fileID: 11400000, guid: b66f0371a5b5b944e880e393e8937eaf, type: 2}
   _sessionSettings: {fileID: 11400000, guid: 3b5d156653991204b91581afdfc2d1d4, type: 2}
+  _soundLibrary: {fileID: 11400000, guid: 56a870946741f9b4489ea45861f1b1af, type: 2}
   _treeSpawner: {fileID: 592205788}
   _mapBoundary: {fileID: 1863911680}
   _gameCamera: {fileID: 1720119155}
   _playerSpawner: {fileID: 1162719838}
+  _audioPlayer: {fileID: 581925702}
   _sessionHud: {fileID: 1613471087}
   _pausePanel: {fileID: 100749597}
   _sessionEndPanel: {fileID: 991514390}
@@ -1394,6 +1396,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 536811119}
   m_CullTransparentMesh: 1
+--- !u!1 &581925701
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 581925703}
+  - component: {fileID: 581925702}
+  m_Layer: 0
+  m_Name: Audio
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &581925702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 581925701}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8c93f4cbf9ff2f4f90cee6d42723841, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioPlayer
+  _sfxVoices: 12
+--- !u!4 &581925703
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 581925701}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &592205786
 GameObject:
   m_ObjectHideFlags: 0
@@ -3679,3 +3726,4 @@ SceneRoots:
   - {fileID: 806318138}
   - {fileID: 1090765713}
   - {fileID: 1347556050}
+  - {fileID: 581925703}
