@@ -15,7 +15,7 @@ MonoBehaviour:
   _moveSpeed: 5
   _turnSpeed: 900
   _damage: 1
-  _attacksPerSecond: 1.8
+  _attacksPerSecond: 1.4
   _attackReach: 0.75
   _attackRadius: 0.35
   _attackHeight: 0.5
