@@ -78,3 +78,6 @@ crashlytics-build.properties
 # 다른 PC에서 작업하려면 이 폴더를 .meta 파일까지 통째로 직접 복사해야 프리팹 참조가 유지된다.
 /[Aa]ssets/_Project/Art/Varco/
 /[Aa]ssets/_Project/Art/Varco.meta
+
+# 블렌더 원본(.blend)과 내려받은 원본 모델. Unity 밖(Assets 밖)에 두고 깃에 올리지 않는다.
+/ArtSource/
