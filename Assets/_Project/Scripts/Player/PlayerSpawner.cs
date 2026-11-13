@@ -13,7 +13,7 @@ public class PlayerSpawner : MonoBehaviour
     public void MoveToSpawnPoint(GameObject player)
     {
         player.transform.position = _spawnPoint.position;
-        if (player.TryGetComponent(out Rigidbody2D rb))
+        if (player.TryGetComponent(out Rigidbody rb))
         {
             rb.position = _spawnPoint.position;
         }

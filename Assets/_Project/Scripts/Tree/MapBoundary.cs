@@ -3,20 +3,21 @@ using UnityEngine;
 // 벌목 영역 바깥을 피해를 받지 않는 나무로 빈틈없이 둘러싼다.
 public class MapBoundary : MonoBehaviour
 {
-    [SerializeField] private BoxCollider2D _spawnArea;
+    [Tooltip("나무를 까는 영역. 바닥(XZ) 크기만 쓴다.")]
+    [SerializeField] private BoxCollider _spawnArea;
     [SerializeField] private GameObject _boundaryTreePrefab;
     [SerializeField] private Transform _boundaryRoot;
 
     [Tooltip("벌목 영역과 경계 나무 줄 사이에 남길 거리. 플레이어가 가장자리 나무를 돌아서 지나갈 수 있게 한다.")]
     [SerializeField] private float _padding = 1.5f;
-    [Tooltip("경계 나무 사이 간격. 나무 지름보다 작아야 빈틈이 생기지 않는다.")]
+    [Tooltip("경계 나무 사이 간격. 나무 밑동 지름보다 작아야 빈틈이 생기지 않는다.")]
     [SerializeField] private float _treeSpacing = 0.8f;
     [Tooltip("카메라가 경계 나무 바깥을 얼마나 더 보여줄지")]
     [SerializeField] private float _cameraMargin = 1f;
 
     private Transform BoundaryRoot => _boundaryRoot != null ? _boundaryRoot : transform;
 
-    // 카메라가 넘어가면 안 되는 범위
+    // 카메라가 따라갈 수 있는 바닥 범위. x는 월드 X, y는 월드 Z다.
     public Rect CameraRect { get; private set; }
 
     public void Build()
@@ -24,30 +25,30 @@ public class MapBoundary : MonoBehaviour
         Clear();
 
         Bounds bounds = _spawnArea.bounds;
-        bounds.Expand(new Vector3(_padding * 2f, _padding * 2f, 0f));
-        Vector2 min = bounds.min;
-        Vector2 max = bounds.max;
+        float minX = bounds.min.x - _padding;
+        float maxX = bounds.max.x + _padding;
+        float minZ = bounds.min.z - _padding;
+        float maxZ = bounds.max.z + _padding;
 
-        int columns = Mathf.CeilToInt((max.x - min.x) / _treeSpacing);
-        int rows = Mathf.CeilToInt((max.y - min.y) / _treeSpacing);
-        float stepX = (max.x - min.x) / columns;
-        float stepY = (max.y - min.y) / rows;
+        int columns = Mathf.CeilToInt((maxX - minX) / _treeSpacing);
+        int rows = Mathf.CeilToInt((maxZ - minZ) / _treeSpacing);
+        float stepX = (maxX - minX) / columns;
+        float stepZ = (maxZ - minZ) / rows;
 
-        // 위아래 줄은 모서리까지, 양옆 줄은 모서리를 빼고 놓아 겹치지 않게 한다.
+        // 앞뒤 줄은 모서리까지, 양옆 줄은 모서리를 빼고 놓아 겹치지 않게 한다.
         for (int x = 0; x <= columns; x++)
         {
-            PlaceTree(new Vector2(min.x + x * stepX, min.y));
-            PlaceTree(new Vector2(min.x + x * stepX, max.y));
+            PlaceTree(minX + x * stepX, minZ);
+            PlaceTree(minX + x * stepX, maxZ);
         }
 
-        for (int y = 1; y < rows; y++)
+        for (int z = 1; z < rows; z++)
         {
-            PlaceTree(new Vector2(min.x, min.y + y * stepY));
-            PlaceTree(new Vector2(max.x, min.y + y * stepY));
+            PlaceTree(minX, minZ + z * stepZ);
+            PlaceTree(maxX, minZ + z * stepZ);
         }
 
-        Vector2 margin = Vector2.one * _cameraMargin;
-        CameraRect = Rect.MinMaxRect(min.x - margin.x, min.y - margin.y, max.x + margin.x, max.y + margin.y);
+        CameraRect = Rect.MinMaxRect(minX - _cameraMargin, minZ - _cameraMargin, maxX + _cameraMargin, maxZ + _cameraMargin);
     }
 
     private void Clear()
@@ -58,8 +59,9 @@ public class MapBoundary : MonoBehaviour
         }
     }
 
-    private void PlaceTree(Vector2 position)
+    private void PlaceTree(float x, float z)
     {
-        Instantiate(_boundaryTreePrefab, position, Quaternion.identity, BoundaryRoot);
+        Quaternion rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+        Instantiate(_boundaryTreePrefab, new Vector3(x, 0f, z), rotation, BoundaryRoot);
     }
 }

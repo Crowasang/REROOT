@@ -9,6 +9,24 @@ public class TreeHpBar : MonoBehaviour
     private Vector3 _fillBaseScale;
     private Vector3 _fillBasePosition;
     private bool _isInitialized;
+    private Transform _cameraTransform;
+
+    // 3D 공간에 떠 있으므로 늘 카메라를 정면으로 보게 돌린다.
+    private void LateUpdate()
+    {
+        if (_cameraTransform == null)
+        {
+            Camera mainCamera = Camera.main;
+            if (mainCamera == null)
+            {
+                return;
+            }
+
+            _cameraTransform = mainCamera.transform;
+        }
+
+        transform.rotation = _cameraTransform.rotation;
+    }
 
     public void Show(float ratio)
     {

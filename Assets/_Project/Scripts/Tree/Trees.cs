@@ -6,9 +6,13 @@ using UnityEngine;
 
 public abstract class Trees : MonoBehaviour
 {
+    // URP Lit/Unlit 셰이더의 기본 색 속성
+    private static readonly int BASE_COLOR_ID = Shader.PropertyToID("_BaseColor");
+
     [SerializeField] protected TreeData _data;
+    [Tooltip("모델이 들어 있는 자식. 흔들림 연출이 이 위치를 움직인다. 모델을 바꿀 때는 이 아래만 교체한다.")]
     [SerializeField] private Transform _visual;
-    [SerializeField] private Collider2D _collider;
+    [SerializeField] private Collider _collider;
     [SerializeField] private TreeHpBar _hpBar;
 
     [Header("피격 연출 (임시)")]
@@ -26,8 +30,8 @@ public abstract class Trees : MonoBehaviour
 
     private readonly Subject<Trees> _onFelled = new();
 
-    private SpriteRenderer _spriteRenderer;
-    private Color _baseColor;
+    private Renderer[] _renderers;
+    private MaterialPropertyBlock _tintBlock;
     private Vector3 _visualBasePosition;
     private CancellationTokenSource _activeCts;
 
@@ -40,8 +44,9 @@ public abstract class Trees : MonoBehaviour
 
     protected virtual void Awake()
     {
-        _spriteRenderer = _visual.GetComponent<SpriteRenderer>();
-        _baseColor = _spriteRenderer.color;
+        // 모델은 여러 메시로 이뤄질 수 있으므로 자식 렌더러를 모두 물들인다.
+        _renderers = _visual.GetComponentsInChildren<Renderer>();
+        _tintBlock = new MaterialPropertyBlock();
         _visualBasePosition = _visual.localPosition;
         ResetState();
     }
@@ -70,7 +75,7 @@ public abstract class Trees : MonoBehaviour
         _currentHp = _data.MaxHp;
         _collider.enabled = true;
         _visual.localPosition = _visualBasePosition;
-        _spriteRenderer.color = _baseColor;
+        ClearTint();
         _hpBar.Hide();
     }
 
@@ -98,7 +103,7 @@ public abstract class Trees : MonoBehaviour
     // 쓰러짐 연출. 애니메이션을 넣을 때는 재정의해서 애니메이션이 끝날 때까지 기다린다.
     protected virtual async UniTask FallAsync(CancellationToken token)
     {
-        _spriteRenderer.color = _fallingColor;
+        SetTint(_fallingColor);
         await UniTask.Delay(TimeSpan.FromSeconds(_fallDuration), cancellationToken: token);
     }
 
@@ -114,14 +119,16 @@ public abstract class Trees : MonoBehaviour
 
     private async UniTaskVoid PlayHitAsync(CancellationToken token)
     {
-        _spriteRenderer.color = _hitFlashColor;
+        SetTint(_hitFlashColor);
 
         try
         {
             float elapsed = 0f;
             while (elapsed < _hitShakeDuration && !IsFelled)
             {
-                _visual.localPosition = _visualBasePosition + (Vector3)(UnityEngine.Random.insideUnitCircle * _hitShakeStrength);
+                // 바닥과 나란하게(XZ) 흔든다.
+                Vector2 offset = UnityEngine.Random.insideUnitCircle * _hitShakeStrength;
+                _visual.localPosition = _visualBasePosition + new Vector3(offset.x, 0f, offset.y);
                 await UniTask.Yield(PlayerLoopTiming.Update, token);
                 elapsed += Time.deltaTime;
             }
@@ -131,8 +138,27 @@ public abstract class Trees : MonoBehaviour
             if (!IsFelled)
             {
                 _visual.localPosition = _visualBasePosition;
-                _spriteRenderer.color = _baseColor;
+                ClearTint();
             }
+        }
+    }
+
+    // 머티리얼을 복제하지 않고 색만 덮어쓴다. 나무 수백 그루가 머티리얼을 공유하기 때문이다.
+    private void SetTint(Color color)
+    {
+        _tintBlock.SetColor(BASE_COLOR_ID, color);
+        foreach (Renderer target in _renderers)
+        {
+            target.SetPropertyBlock(_tintBlock);
+        }
+    }
+
+    // 덮어쓴 색을 지워 머티리얼 원래 색으로 돌린다.
+    private void ClearTint()
+    {
+        foreach (Renderer target in _renderers)
+        {
+            target.SetPropertyBlock(null);
         }
     }
 }
