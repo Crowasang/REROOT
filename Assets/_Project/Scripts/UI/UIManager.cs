@@ -3,13 +3,12 @@ using R3;
 using UnityEngine;
 using VContainer.Unity;
 
-// 화면(뷰)과 시스템(서비스)을 잇는 일만 맡는다.
-// 뷰는 시스템을 모르고, 시스템은 화면을 모른다. 화면을 바꾸거나 새 패널을 붙일 때는 여기만 고치면 된다.
+// 늘 떠 있는 화면(HUD, 일시정지 창)과 시스템을 잇는 일만 맡는다.
+// 게임 단계에 딸린 화면(결과, 강화 등)은 그 단계의 상태 클래스가 직접 열고 닫는다.
 public sealed class UIManager : IStartable, IDisposable
 {
     private readonly IHudView _hud;
     private readonly IPauseView _pauseView;
-    private readonly ISessionEndView _sessionEndView;
     private readonly ISessionService _session;
     private readonly IPauseService _pause;
     private readonly ISessionTimer _timer;
@@ -19,7 +18,6 @@ public sealed class UIManager : IStartable, IDisposable
     public UIManager(
         IHudView hud,
         IPauseView pauseView,
-        ISessionEndView sessionEndView,
         ISessionService session,
         IPauseService pause,
         ISessionTimer timer,
@@ -27,7 +25,6 @@ public sealed class UIManager : IStartable, IDisposable
     {
         _hud = hud;
         _pauseView = pauseView;
-        _sessionEndView = sessionEndView;
         _session = session;
         _pause = pause;
         _timer = timer;
@@ -37,11 +34,9 @@ public sealed class UIManager : IStartable, IDisposable
     public void Start()
     {
         _pauseView.Hide();
-        _sessionEndView.Hide();
 
         BindHud();
         BindPause();
-        BindSessionEnd();
     }
 
     public void Dispose()
@@ -79,12 +74,5 @@ public sealed class UIManager : IStartable, IDisposable
 
         _pauseView.OnResume.Subscribe(_ => _pause.Resume()).AddTo(_disposables);
         _pauseView.OnLeave.Subscribe(_ => _session.EndSession(SessionEndReason.Left)).AddTo(_disposables);
-    }
-
-    private void BindSessionEnd()
-    {
-        _session.OnStarted.Subscribe(_ => _sessionEndView.Hide()).AddTo(_disposables);
-        _session.OnEnded.Subscribe(_sessionEndView.Show).AddTo(_disposables);
-        _sessionEndView.OnContinue.Subscribe(_ => _session.StartSession()).AddTo(_disposables);
     }
 }

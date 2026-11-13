@@ -9,6 +9,9 @@ public interface ISessionService
 
     Observable<SessionResult> OnEnded { get; }
 
+    // 가장 최근에 끝난 세션의 결과. 결과 화면이 읽는다.
+    SessionResult LastResult { get; }
+
     void StartSession();
 
     // 이미 끝난 세션이면 아무것도 하지 않는다.
