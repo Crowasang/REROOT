@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63a4b2097de83544e8a70ff61da2c24c, type: 3}
+  m_Name: Upgrade_01_SharpAxe
+  m_EditorClassIdentifier: Assembly-CSharp::UpgradeData
+  _id: sharp_axe
+  _displayName: Sharp Axe
+  _description: Each swing deals +1 damage.
+  _icon: {fileID: 0}
+  _maxLevel: 10
+  _baseCost: 30
+  _costGrowth: 1.6
+  _effects:
+  - _stat: 1
+    _modifierType: 0
+    _valuePerLevel: 1
