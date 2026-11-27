@@ -15,14 +15,14 @@ public sealed class RewardManager : IStartable, IDisposable
     private readonly SessionSettings _settings;
     private readonly CompositeDisposable _disposables = new();
 
-    public RewardManager(IForest forest, IWallet wallet, ISessionTimer timer, ISessionService session, IStatService stats, SessionSettings settings)
+    public RewardManager(IForest _forest, IWallet _wallet, ISessionTimer _timer, ISessionService _session, IStatService _stats, SessionSettings _settings)
     {
-        _forest = forest;
-        _wallet = wallet;
-        _timer = timer;
-        _session = session;
-        _stats = stats;
-        _settings = settings;
+        this._forest = _forest;
+        this._wallet = _wallet;
+        this._timer = _timer;
+        this._session = _session;
+        this._stats = _stats;
+        this._settings = _settings;
     }
 
     public void Start()
@@ -35,7 +35,7 @@ public sealed class RewardManager : IStartable, IDisposable
         _disposables.Dispose();
     }
 
-    private void HandleTreeFelled(Trees tree)
+    private void HandleTreeFelled(Trees _tree)
     {
         // 세션이 끝난 뒤에 마저 쓰러진 나무는 종료 화면의 획득량과 맞지 않으므로 세지 않는다.
         if (!_session.IsActive.CurrentValue)
@@ -43,7 +43,7 @@ public sealed class RewardManager : IStartable, IDisposable
             return;
         }
 
-        _wallet.AddWood(Mathf.RoundToInt(_stats.Evaluate(StatType.WoodGain, tree.Data.Reward)));
+        _wallet.AddWood(Mathf.RoundToInt(_stats.Evaluate(StatType.WoodGain, _tree.Data.Reward)));
         _timer.AddTime(_stats.Evaluate(StatType.TreeBonusTime, _settings.BonusPerTree));
     }
 }

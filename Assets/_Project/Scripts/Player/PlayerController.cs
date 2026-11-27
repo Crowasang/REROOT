@@ -20,9 +20,9 @@ public class PlayerController : MonoBehaviour, IPlayerControl
         _attack = GetComponent<PlayerAttack>();
     }
 
-    public void SetControlEnabled(bool isEnabled)
+    public void SetControlEnabled(bool _isEnabled)
     {
-        if (isEnabled)
+        if (_isEnabled)
         {
             _playerInput.ActivateInput();
             return;

@@ -29,8 +29,8 @@ public class UpgradeData : ScriptableObject
     public IReadOnlyList<UpgradeEffect> Effects => _effects;
 
     // currentLevel에서 다음 단계로 올리는 비용
-    public int GetCost(int currentLevel)
+    public int GetCost(int _currentLevel)
     {
-        return Mathf.RoundToInt(_baseCost * Mathf.Pow(_costGrowth, currentLevel));
+        return Mathf.RoundToInt(_baseCost * Mathf.Pow(_costGrowth, _currentLevel));
     }
 }

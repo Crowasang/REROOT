@@ -40,33 +40,33 @@ public class SoundLibrary : ScriptableObject
     [SerializeField] private SfxEntry[] _sfx;
     [SerializeField] private MusicEntry[] _music;
 
-    public bool TryGetSfx(SoundId id, out SfxEntry entry)
+    public bool TryGetSfx(SoundId _id, out SfxEntry _entry)
     {
-        foreach (SfxEntry candidate in _sfx)
+        foreach (SfxEntry _candidate in _sfx)
         {
-            if (candidate.Id == id)
+            if (_candidate.Id == _id)
             {
-                entry = candidate;
+                _entry = _candidate;
                 return true;
             }
         }
 
-        entry = null;
+        _entry = null;
         return false;
     }
 
-    public bool TryGetMusic(MusicId id, out MusicEntry entry)
+    public bool TryGetMusic(MusicId _id, out MusicEntry _entry)
     {
-        foreach (MusicEntry candidate in _music)
+        foreach (MusicEntry _candidate in _music)
         {
-            if (candidate.Id == id)
+            if (_candidate.Id == _id)
             {
-                entry = candidate;
+                _entry = _candidate;
                 return true;
             }
         }
 
-        entry = null;
+        _entry = null;
         return false;
     }
 }

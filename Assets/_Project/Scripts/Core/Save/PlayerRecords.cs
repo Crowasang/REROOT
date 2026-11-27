@@ -20,16 +20,16 @@ public sealed class PlayerRecords : IPlayerRecords, ISaveable, IDisposable
         _totalSessions.Value++;
     }
 
-    public void Load(SaveData data)
+    public void Load(SaveData _data)
     {
-        _totalTreesFelled.Value = data.TotalTreesFelled;
-        _totalSessions.Value = data.TotalSessions;
+        _totalTreesFelled.Value = _data.TotalTreesFelled;
+        _totalSessions.Value = _data.TotalSessions;
     }
 
-    public void Write(SaveData data)
+    public void Write(SaveData _data)
     {
-        data.TotalTreesFelled = _totalTreesFelled.Value;
-        data.TotalSessions = _totalSessions.Value;
+        _data.TotalTreesFelled = _totalTreesFelled.Value;
+        _data.TotalSessions = _totalSessions.Value;
     }
 
     public void Dispose()

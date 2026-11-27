@@ -9,16 +9,16 @@ public sealed class ResultState : IGameState
     private readonly ISessionEndView _view;
     private IDisposable _subscription;
 
-    public ResultState(ISessionService session, ISessionEndView view)
+    public ResultState(ISessionService _session, ISessionEndView _view)
     {
-        _session = session;
-        _view = view;
+        this._session = _session;
+        this._view = _view;
     }
 
-    public void Enter(IGameStateMachine owner)
+    public void Enter(IGameStateMachine _owner)
     {
         _view.Show(_session.LastResult);
-        _subscription = _view.OnContinue.Take(1).Subscribe(_ => owner.ChangeState<ForestState>());
+        _subscription = _view.OnContinue.Take(1).Subscribe(_ => _owner.ChangeState<ForestState>());
     }
 
     public void Exit()
@@ -26,9 +26,5 @@ public sealed class ResultState : IGameState
         _subscription?.Dispose();
         _subscription = null;
         _view.Hide();
-    }
-
-    public void Tick()
-    {
     }
 }

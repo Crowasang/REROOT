@@ -11,9 +11,9 @@ public interface ISessionTimer
     // 시간이 다 돼서 끝났을 때만 발행한다. Stop()으로 멈출 때는 발행하지 않는다.
     Observable<Unit> OnTimeUp { get; }
 
-    void Begin(float duration);
+    void Begin(float _duration);
 
-    void AddTime(float seconds);
+    void AddTime(float _seconds);
 
     void Stop();
 }

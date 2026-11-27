@@ -8,12 +8,12 @@ public sealed class GameInitializer : IStartable
     private readonly IPlayerSpawner _playerSpawner;
     private readonly IGameStateMachine _stateMachine;
 
-    public GameInitializer(IMapBoundary mapBoundary, ICameraController camera, IPlayerSpawner playerSpawner, IGameStateMachine stateMachine)
+    public GameInitializer(IMapBoundary _mapBoundary, ICameraController _camera, IPlayerSpawner _playerSpawner, IGameStateMachine _stateMachine)
     {
-        _mapBoundary = mapBoundary;
-        _camera = camera;
-        _playerSpawner = playerSpawner;
-        _stateMachine = stateMachine;
+        this._mapBoundary = _mapBoundary;
+        this._camera = _camera;
+        this._playerSpawner = _playerSpawner;
+        this._stateMachine = _stateMachine;
     }
 
     public void Start()

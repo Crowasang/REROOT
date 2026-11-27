@@ -22,24 +22,24 @@ public sealed class SessionManager : ISessionService, IDisposable
     private SessionResult _lastResult;
 
     public SessionManager(
-        IForest forest,
-        ISessionTimer timer,
-        IWallet wallet,
-        IPlayerSpawner playerSpawner,
-        ICameraController camera,
-        IStatService stats,
-        SessionSettings settings)
+        IForest _forest,
+        ISessionTimer _timer,
+        IWallet _wallet,
+        IPlayerSpawner _playerSpawner,
+        ICameraController _camera,
+        IStatService _stats,
+        SessionSettings _settings)
     {
-        _forest = forest;
-        _timer = timer;
-        _wallet = wallet;
-        _playerSpawner = playerSpawner;
-        _camera = camera;
-        _stats = stats;
-        _settings = settings;
+        this._forest = _forest;
+        this._timer = _timer;
+        this._wallet = _wallet;
+        this._playerSpawner = _playerSpawner;
+        this._camera = _camera;
+        this._stats = _stats;
+        this._settings = _settings;
 
-        _timer.OnTimeUp.Subscribe(_ => EndSession(SessionEndReason.TimeUp)).AddTo(_disposables);
-        _forest.OnCleared.Subscribe(_ => EndSession(SessionEndReason.Cleared)).AddTo(_disposables);
+        this._timer.OnTimeUp.Subscribe(_ => EndSession(SessionEndReason.TimeUp)).AddTo(_disposables);
+        this._forest.OnCleared.Subscribe(_ => EndSession(SessionEndReason.Cleared)).AddTo(_disposables);
     }
 
     public ReadOnlyReactiveProperty<bool> IsActive => _isActive;
@@ -52,10 +52,10 @@ public sealed class SessionManager : ISessionService, IDisposable
         _forest.Spawn(_settings.StartTree);
 
         _playerSpawner.MoveToSpawnPoint();
-        IPlayerControl player = _playerSpawner.Player.CurrentValue;
-        if (player != null)
+        IPlayerControl _player = _playerSpawner.Player.CurrentValue;
+        if (_player != null)
         {
-            _camera.SetTarget(player.Transform);
+            _camera.SetTarget(_player.Transform);
         }
 
         _woodAtStart = _wallet.Wood.CurrentValue;
@@ -65,7 +65,7 @@ public sealed class SessionManager : ISessionService, IDisposable
         _onStarted.OnNext(Unit.Default);
     }
 
-    public void EndSession(SessionEndReason reason)
+    public void EndSession(SessionEndReason _reason)
     {
         if (!_isActive.Value)
         {
@@ -74,7 +74,7 @@ public sealed class SessionManager : ISessionService, IDisposable
 
         _timer.Stop();
         _isActive.Value = false;
-        _lastResult = new SessionResult(reason, _wallet.Wood.CurrentValue - _woodAtStart);
+        _lastResult = new SessionResult(_reason, _wallet.Wood.CurrentValue - _woodAtStart);
         _onEnded.OnNext(_lastResult);
     }
 

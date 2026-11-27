@@ -11,10 +11,10 @@ public sealed class AutoSaveManager : IStartable, IDisposable
     private readonly IUpgradeService _upgrades;
     private IDisposable _subscription;
 
-    public AutoSaveManager(ISaveService save, IUpgradeService upgrades)
+    public AutoSaveManager(ISaveService _save, IUpgradeService _upgrades)
     {
-        _save = save;
-        _upgrades = upgrades;
+        this._save = _save;
+        this._upgrades = _upgrades;
     }
 
     public void Start()

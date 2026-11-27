@@ -7,51 +7,51 @@ public static class ForestLayout
     // 바닥(XZ) 영역에 일정 간격 격자를 만들고, 남는 여백은 양쪽에 똑같이 나눈다.
     // clearCenter 주변 clearRadius 안은 비워 둔다(플레이어 시작 자리).
     public static void FillGrid(
-        List<Pose> results,
-        Bounds area,
-        float spacing,
-        float jitter,
-        bool randomYaw,
-        Vector3? clearCenter,
-        float clearRadius)
+        List<Pose> _results,
+        Bounds _area,
+        float _spacing,
+        float _jitter,
+        bool _randomYaw,
+        Vector3? _clearCenter,
+        float _clearRadius)
     {
-        results.Clear();
+        _results.Clear();
 
-        int columns = Mathf.FloorToInt(area.size.x / spacing) + 1;
-        int rows = Mathf.FloorToInt(area.size.z / spacing) + 1;
-        Vector3 origin = new(
-            area.center.x - (columns - 1) * spacing * 0.5f,
+        int _columns = Mathf.FloorToInt(_area.size.x / _spacing) + 1;
+        int _rows = Mathf.FloorToInt(_area.size.z / _spacing) + 1;
+        Vector3 _origin = new(
+            _area.center.x - (_columns - 1) * _spacing * 0.5f,
             0f,
-            area.center.z - (rows - 1) * spacing * 0.5f);
+            _area.center.z - (_rows - 1) * _spacing * 0.5f);
 
-        float clearSqr = clearRadius * clearRadius;
+        float _clearSqr = _clearRadius * _clearRadius;
 
-        for (int z = 0; z < rows; z++)
+        for (int _z = 0; _z < _rows; _z++)
         {
-            for (int x = 0; x < columns; x++)
+            for (int _x = 0; _x < _columns; _x++)
             {
-                Vector3 position = origin + new Vector3(x, 0f, z) * spacing;
+                Vector3 _position = _origin + new Vector3(_x, 0f, _z) * _spacing;
 
-                if (clearCenter.HasValue && FlatSqrDistance(clearCenter.Value, position) < clearSqr)
+                if (_clearCenter.HasValue && FlatSqrDistance(_clearCenter.Value, _position) < _clearSqr)
                 {
                     continue;
                 }
 
-                Vector2 offset = Random.insideUnitCircle * jitter;
-                position += new Vector3(offset.x, 0f, offset.y);
+                Vector2 _offset = Random.insideUnitCircle * _jitter;
+                _position += new Vector3(_offset.x, 0f, _offset.y);
 
                 // 같은 모델이 똑같은 방향으로 늘어서 보이지 않도록 제자리에서 돌린다.
-                Quaternion rotation = randomYaw ? Quaternion.Euler(0f, Random.Range(0f, 360f), 0f) : Quaternion.identity;
-                results.Add(new Pose(position, rotation));
+                Quaternion _rotation = _randomYaw ? Quaternion.Euler(0f, Random.Range(0f, 360f), 0f) : Quaternion.identity;
+                _results.Add(new Pose(_position, _rotation));
             }
         }
     }
 
     // 높이는 무시하고 바닥 위 거리로만 잰다.
-    private static float FlatSqrDistance(Vector3 a, Vector3 b)
+    private static float FlatSqrDistance(Vector3 _a, Vector3 _b)
     {
-        float dx = a.x - b.x;
-        float dz = a.z - b.z;
-        return dx * dx + dz * dz;
+        float _dx = _a.x - _b.x;
+        float _dz = _a.z - _b.z;
+        return _dx * _dx + _dz * _dz;
     }
 }

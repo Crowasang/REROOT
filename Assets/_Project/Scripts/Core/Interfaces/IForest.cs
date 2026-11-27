@@ -16,5 +16,5 @@ public interface IForest
     Observable<Unit> OnCleared { get; }
 
     // 기존 나무를 치우고 data의 나무로 숲을 새로 깐다.
-    void Spawn(TreeData data);
+    void Spawn(TreeData _data);
 }

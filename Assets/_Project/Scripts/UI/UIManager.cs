@@ -16,19 +16,19 @@ public sealed class UIManager : IStartable, IDisposable
     private readonly CompositeDisposable _disposables = new();
 
     public UIManager(
-        IHudView hud,
-        IPauseView pauseView,
-        ISessionService session,
-        IPauseService pause,
-        ISessionTimer timer,
-        IWallet wallet)
+        IHudView _hud,
+        IPauseView _pauseView,
+        ISessionService _session,
+        IPauseService _pause,
+        ISessionTimer _timer,
+        IWallet _wallet)
     {
-        _hud = hud;
-        _pauseView = pauseView;
-        _session = session;
-        _pause = pause;
-        _timer = timer;
-        _wallet = wallet;
+        this._hud = _hud;
+        this._pauseView = _pauseView;
+        this._session = _session;
+        this._pause = _pause;
+        this._timer = _timer;
+        this._wallet = _wallet;
     }
 
     public void Start()
@@ -47,9 +47,9 @@ public sealed class UIManager : IStartable, IDisposable
     private void BindHud()
     {
         _timer.Remaining
-            .Subscribe(remaining => _hud.SetTime(
-                _timer.Duration > 0f ? remaining / _timer.Duration : 0f,
-                Mathf.CeilToInt(remaining)))
+            .Subscribe(_remaining => _hud.SetTime(
+                _timer.Duration > 0f ? _remaining / _timer.Duration : 0f,
+                Mathf.CeilToInt(_remaining)))
             .AddTo(_disposables);
 
         _wallet.Wood.Subscribe(_hud.SetWood).AddTo(_disposables);
@@ -59,9 +59,9 @@ public sealed class UIManager : IStartable, IDisposable
     private void BindPause()
     {
         _pause.IsPaused
-            .Subscribe(isPaused =>
+            .Subscribe(_isPaused =>
             {
-                if (isPaused)
+                if (_isPaused)
                 {
                     _pauseView.Show();
                 }

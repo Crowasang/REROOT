@@ -56,14 +56,14 @@ public abstract class Trees : MonoBehaviour, IDamageable
         _view.ResetView();
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int _damage)
     {
         if (!CanTakeDamage)
         {
             return;
         }
 
-        _currentHp = Mathf.Max(0, _currentHp - damage);
+        _currentHp = Mathf.Max(0, _currentHp - _damage);
         _onHit.OnNext(this);
 
         if (IsFelled)
@@ -83,17 +83,17 @@ public abstract class Trees : MonoBehaviour, IDamageable
     }
 
     // 쓰러지는 연출. 애니메이션이나 특수 효과가 필요한 나무는 재정의한다.
-    protected virtual UniTask FallAsync(CancellationToken token)
+    protected virtual UniTask FallAsync(CancellationToken _token)
     {
-        return _view.PlayFallAsync(token);
+        return _view.PlayFallAsync(_token);
     }
 
-    private async UniTaskVoid FallAndNotifyAsync(CancellationToken token)
+    private async UniTaskVoid FallAndNotifyAsync(CancellationToken _token)
     {
         // 쓰러지는 동안 플레이어 길을 막거나 다시 맞지 않도록 콜라이더를 끈다.
         _collider.enabled = false;
 
-        await FallAsync(token);
+        await FallAsync(_token);
         _onFelled.OnNext(this);
     }
 }

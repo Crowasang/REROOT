@@ -60,7 +60,7 @@ Assets/_Project/
 2. `[SerializeField]` 필드
 3. private 필드
 4. 프로퍼티, 이벤트(Observable)
-5. Unity 메시지 (`Awake`, `OnEnable`, `Start`, `Update`, `OnDisable`, `OnDestroy` 순)
+5. Unity 메시지 (`Awake`, `OnEnable`, `Start`, `OnDisable`, `OnDestroy` 순)
 6. public 메서드
 7. private 메서드
 

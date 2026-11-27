@@ -31,17 +31,18 @@ public class PlayerAnimator : MonoBehaviour
     private void Start()
     {
         _attack.OnSwing.Subscribe(_ => PlayChop()).AddTo(this);
-    }
 
-    private void Update()
-    {
-        _animator.SetFloat(SPEED_ID, _movement.NormalizedSpeed, _speedDampTime, Time.deltaTime);
+        // 달리기 ↔ 대기 섞기는 매 프레임 감쇠를 줘야 부드러우므로 프레임마다 값을 넘긴다.
+        Observable.EveryUpdate()
+            .Where(_ => isActiveAndEnabled)
+            .Subscribe(_ => _animator.SetFloat(SPEED_ID, _movement.NormalizedSpeed, _speedDampTime, Time.deltaTime))
+            .AddTo(this);
     }
 
     [Inject]
-    public void Construct(PlayerStats stats)
+    public void Construct(PlayerStats _stats)
     {
-        _stats = stats;
+        this._stats = _stats;
     }
 
     private void PlayChop()

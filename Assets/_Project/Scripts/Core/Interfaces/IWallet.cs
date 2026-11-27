@@ -5,8 +5,8 @@ public interface IWallet
 {
     ReadOnlyReactiveProperty<int> Wood { get; }
 
-    void AddWood(int amount);
+    void AddWood(int _amount);
 
     // 모자라면 false를 돌려주고 아무것도 바꾸지 않는다.
-    bool TrySpendWood(int amount);
+    bool TrySpendWood(int _amount);
 }

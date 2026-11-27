@@ -24,44 +24,44 @@ public class MapBoundary : MonoBehaviour, IMapBoundary
     {
         Clear();
 
-        Bounds bounds = _spawnArea.bounds;
-        float minX = bounds.min.x - _padding;
-        float maxX = bounds.max.x + _padding;
-        float minZ = bounds.min.z - _padding;
-        float maxZ = bounds.max.z + _padding;
+        Bounds _bounds = _spawnArea.bounds;
+        float _minX = _bounds.min.x - _padding;
+        float _maxX = _bounds.max.x + _padding;
+        float _minZ = _bounds.min.z - _padding;
+        float _maxZ = _bounds.max.z + _padding;
 
-        int columns = Mathf.CeilToInt((maxX - minX) / _treeSpacing);
-        int rows = Mathf.CeilToInt((maxZ - minZ) / _treeSpacing);
-        float stepX = (maxX - minX) / columns;
-        float stepZ = (maxZ - minZ) / rows;
+        int _columns = Mathf.CeilToInt((_maxX - _minX) / _treeSpacing);
+        int _rows = Mathf.CeilToInt((_maxZ - _minZ) / _treeSpacing);
+        float _stepX = (_maxX - _minX) / _columns;
+        float _stepZ = (_maxZ - _minZ) / _rows;
 
         // 앞뒤 줄은 모서리까지, 양옆 줄은 모서리를 빼고 놓아 겹치지 않게 한다.
-        for (int x = 0; x <= columns; x++)
+        for (int _x = 0; _x <= _columns; _x++)
         {
-            PlaceTree(minX + x * stepX, minZ);
-            PlaceTree(minX + x * stepX, maxZ);
+            PlaceTree(_minX + _x * _stepX, _minZ);
+            PlaceTree(_minX + _x * _stepX, _maxZ);
         }
 
-        for (int z = 1; z < rows; z++)
+        for (int _z = 1; _z < _rows; _z++)
         {
-            PlaceTree(minX, minZ + z * stepZ);
-            PlaceTree(maxX, minZ + z * stepZ);
+            PlaceTree(_minX, _minZ + _z * _stepZ);
+            PlaceTree(_maxX, _minZ + _z * _stepZ);
         }
 
-        CameraRect = Rect.MinMaxRect(minX - _cameraMargin, minZ - _cameraMargin, maxX + _cameraMargin, maxZ + _cameraMargin);
+        CameraRect = Rect.MinMaxRect(_minX - _cameraMargin, _minZ - _cameraMargin, _maxX + _cameraMargin, _maxZ + _cameraMargin);
     }
 
     private void Clear()
     {
-        for (int i = BoundaryRoot.childCount - 1; i >= 0; i--)
+        for (int _i = BoundaryRoot.childCount - 1; _i >= 0; _i--)
         {
-            Destroy(BoundaryRoot.GetChild(i).gameObject);
+            Destroy(BoundaryRoot.GetChild(_i).gameObject);
         }
     }
 
-    private void PlaceTree(float x, float z)
+    private void PlaceTree(float _x, float _z)
     {
-        Quaternion rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
-        Instantiate(_boundaryTreePrefab, new Vector3(x, 0f, z), rotation, BoundaryRoot);
+        Quaternion _rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+        Instantiate(_boundaryTreePrefab, new Vector3(_x, 0f, _z), _rotation, BoundaryRoot);
     }
 }

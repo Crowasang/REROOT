@@ -16,56 +16,56 @@ public sealed class TreePool
     private readonly Dictionary<Trees, ObjectPool<Trees>> _poolByInstance = new();
 
     // onCreated: 인스턴스를 처음 만들 때 한 번만 호출된다. 재사용되는 인스턴스에 구독을 걸 때 쓴다.
-    public TreePool(Transform root, int defaultCapacity, int maxSize, Action<Trees> onCreated)
+    public TreePool(Transform _root, int _defaultCapacity, int _maxSize, Action<Trees> _onCreated)
     {
-        _root = root;
-        _defaultCapacity = defaultCapacity;
-        _maxSize = maxSize;
-        _onCreated = onCreated;
+        this._root = _root;
+        this._defaultCapacity = _defaultCapacity;
+        this._maxSize = _maxSize;
+        this._onCreated = _onCreated;
     }
 
-    public Trees Get(Trees prefab)
+    public Trees Get(Trees _prefab)
     {
-        return GetPool(prefab).Get();
+        return GetPool(_prefab).Get();
     }
 
-    public void Release(Trees tree)
+    public void Release(Trees _tree)
     {
-        _poolByInstance[tree].Release(tree);
+        _poolByInstance[_tree].Release(_tree);
     }
 
-    private ObjectPool<Trees> GetPool(Trees prefab)
+    private ObjectPool<Trees> GetPool(Trees _prefab)
     {
-        if (_poolByPrefab.TryGetValue(prefab, out ObjectPool<Trees> pool))
+        if (_poolByPrefab.TryGetValue(_prefab, out ObjectPool<Trees> _pool))
         {
-            return pool;
+            return _pool;
         }
 
-        pool = new ObjectPool<Trees>(
-            createFunc: () => Create(prefab, pool),
-            actionOnGet: tree =>
+        _pool = new ObjectPool<Trees>(
+            createFunc: () => Create(_prefab, _pool),
+            actionOnGet: _tree =>
             {
-                tree.ResetState();
-                tree.gameObject.SetActive(true);
+                _tree.ResetState();
+                _tree.gameObject.SetActive(true);
             },
-            actionOnRelease: tree => tree.gameObject.SetActive(false),
-            actionOnDestroy: tree =>
+            actionOnRelease: _tree => _tree.gameObject.SetActive(false),
+            actionOnDestroy: _tree =>
             {
-                _poolByInstance.Remove(tree);
-                Object.Destroy(tree.gameObject);
+                _poolByInstance.Remove(_tree);
+                Object.Destroy(_tree.gameObject);
             },
             defaultCapacity: _defaultCapacity,
             maxSize: _maxSize);
 
-        _poolByPrefab.Add(prefab, pool);
-        return pool;
+        _poolByPrefab.Add(_prefab, _pool);
+        return _pool;
     }
 
-    private Trees Create(Trees prefab, ObjectPool<Trees> pool)
+    private Trees Create(Trees _prefab, ObjectPool<Trees> _pool)
     {
-        Trees tree = Object.Instantiate(prefab, _root);
-        _poolByInstance.Add(tree, pool);
-        _onCreated?.Invoke(tree);
-        return tree;
+        Trees _tree = Object.Instantiate(_prefab, _root);
+        _poolByInstance.Add(_tree, _pool);
+        _onCreated?.Invoke(_tree);
+        return _tree;
     }
 }

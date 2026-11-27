@@ -13,14 +13,14 @@ public class SessionHud : MonoBehaviour, IHudView
 
     public Observable<Unit> OnPauseClicked => _pauseButton.OnClickAsObservable();
 
-    public void SetTime(float ratio, int seconds)
+    public void SetTime(float _ratio, int _seconds)
     {
-        _timeFill.fillAmount = Mathf.Clamp01(ratio);
-        _timeText.text = $"{seconds}s";
+        _timeFill.fillAmount = Mathf.Clamp01(_ratio);
+        _timeText.text = $"{_seconds}s";
     }
 
-    public void SetWood(int wood)
+    public void SetWood(int _wood)
     {
-        _woodText.text = $"Wood {wood}";
+        _woodText.text = $"Wood {_wood}";
     }
 }

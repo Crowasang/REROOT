@@ -10,5 +10,5 @@ public interface IPlayerControl
     Observable<Unit> OnSwing { get; }
 
     // 끄면 입력을 막고 그 자리에 멈춘다.
-    void SetControlEnabled(bool isEnabled);
+    void SetControlEnabled(bool _isEnabled);
 }

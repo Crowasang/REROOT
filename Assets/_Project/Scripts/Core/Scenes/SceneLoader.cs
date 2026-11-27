@@ -10,14 +10,14 @@ public sealed class SceneLoader : ISceneLoader, IDisposable
     private readonly ISaveService _save;
     private readonly ReactiveProperty<bool> _isLoading = new(false);
 
-    public SceneLoader(ISaveService save)
+    public SceneLoader(ISaveService _save)
     {
-        _save = save;
+        this._save = _save;
     }
 
     public ReadOnlyReactiveProperty<bool> IsLoading => _isLoading;
 
-    public async UniTask LoadAsync(SceneId scene)
+    public async UniTask LoadAsync(SceneId _scene)
     {
         if (_isLoading.Value)
         {
@@ -28,7 +28,7 @@ public sealed class SceneLoader : ISceneLoader, IDisposable
         try
         {
             await _save.SaveAsync();
-            await SceneManager.LoadSceneAsync(GetSceneName(scene)).ToUniTask();
+            await SceneManager.LoadSceneAsync(GetSceneName(_scene)).ToUniTask();
         }
         finally
         {
@@ -42,14 +42,14 @@ public sealed class SceneLoader : ISceneLoader, IDisposable
     }
 
     // Build Settings에 들어간 씬 이름과 맞춘다.
-    private static string GetSceneName(SceneId scene)
+    private static string GetSceneName(SceneId _scene)
     {
-        return scene switch
+        return _scene switch
         {
             SceneId.Title => "TitleScene",
             SceneId.Game => "GameScene",
             SceneId.Ending => "EndingScene",
-            _ => throw new ArgumentOutOfRangeException(nameof(scene), scene, null),
+            _ => throw new ArgumentOutOfRangeException(nameof(_scene), _scene, null),
         };
     }
 }

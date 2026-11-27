@@ -23,7 +23,7 @@ VContainer로 조립한다. 조립 담당은 두 단계다.
 
 ## 게임 흐름 (상태 머신)
 
-`GameStateMachine`(`IGameStateMachine`)이 지금 단계 하나만 들고 있고, 단계는 `IGameState`(`Enter` / `Exit` / `Tick`)를 구현한 클래스다.
+`GameStateMachine`(`IGameStateMachine`)이 지금 단계 하나만 들고 있고, 단계는 `IGameState`(`Enter` / `Exit`)를 구현한 클래스다. 매 프레임 도는 일은 없고, 각 상태가 `Enter`에서 이벤트를 구독하고 `Exit`에서 끊는다.
 
 ```
 GameInitializer → ForestState(벌목) → ResultState(결과) → ForestState …
@@ -90,6 +90,6 @@ GameInitializer → ForestState(벌목) → ResultState(결과) → ForestState 
 
 - 씬을 넘어 유지할 것: `RootLifetimeScope`. 그 씬에서만 쓸 것: 씬의 LifetimeScope.
 - 씬 오브젝트·뷰: `RegisterComponent(...).AsImplementedInterfaces()`
-- 매 프레임 돌거나 시작 시 할 일이 있는 클래스: `RegisterEntryPoint<T>()` (`IInitializable`, `IStartable`, `ITickable`)
+- 시작 시 할 일이 있는 클래스: `RegisterEntryPoint<T>()` (`IInitializable`, `IStartable`). `ITickable`은 쓰지 않는다(코드 규칙의 Update 금지).
 - 게임 단계: `Register<T>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf()`
 - 그 밖의 서비스: `Register<T>(Lifetime.Singleton).AsImplementedInterfaces()`

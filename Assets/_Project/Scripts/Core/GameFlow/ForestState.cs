@@ -7,15 +7,15 @@ public sealed class ForestState : IGameState
     private readonly ISessionService _session;
     private IDisposable _subscription;
 
-    public ForestState(ISessionService session)
+    public ForestState(ISessionService _session)
     {
-        _session = session;
+        this._session = _session;
     }
 
-    public void Enter(IGameStateMachine owner)
+    public void Enter(IGameStateMachine _owner)
     {
         // 세션이 끝나면(시간 종료·숲 정리·나가기) 다음 프레임이 아니라 바로 결과로 넘어간다.
-        _subscription = _session.OnEnded.Take(1).Subscribe(_ => owner.ChangeState<ResultState>());
+        _subscription = _session.OnEnded.Take(1).Subscribe(_ => _owner.ChangeState<ResultState>());
         _session.StartSession();
     }
 
@@ -23,9 +23,5 @@ public sealed class ForestState : IGameState
     {
         _subscription?.Dispose();
         _subscription = null;
-    }
-
-    public void Tick()
-    {
     }
 }

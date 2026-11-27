@@ -3,8 +3,8 @@
 public interface ISaveable
 {
     // 게임 시작 시 한 번. 저장 파일이 없으면 기본값이 들어 있는 SaveData가 온다.
-    void Load(SaveData data);
+    void Load(SaveData _data);
 
     // 저장 직전. 자기 상태를 data에 써 넣는다.
-    void Write(SaveData data);
+    void Write(SaveData _data);
 }

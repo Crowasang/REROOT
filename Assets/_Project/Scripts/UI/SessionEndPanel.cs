@@ -12,10 +12,10 @@ public class SessionEndPanel : MonoBehaviour, ISessionEndView
 
     public Observable<Unit> OnContinue => _continueButton.OnClickAsObservable();
 
-    public void Show(SessionResult result)
+    public void Show(SessionResult _result)
     {
-        _titleText.text = GetTitle(result.Reason);
-        _woodGainedText.text = $"Wood +{result.WoodGained}";
+        _titleText.text = GetTitle(_result.Reason);
+        _woodGainedText.text = $"Wood +{_result.WoodGained}";
         gameObject.SetActive(true);
     }
 
@@ -24,9 +24,9 @@ public class SessionEndPanel : MonoBehaviour, ISessionEndView
         gameObject.SetActive(false);
     }
 
-    private static string GetTitle(SessionEndReason reason)
+    private static string GetTitle(SessionEndReason _reason)
     {
-        return reason switch
+        return _reason switch
         {
             SessionEndReason.Cleared => "Forest Cleared!",
             SessionEndReason.Left => "Left the Forest",
