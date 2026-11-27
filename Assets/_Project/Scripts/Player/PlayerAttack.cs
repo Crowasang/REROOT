@@ -25,7 +25,7 @@ public class PlayerAttack : MonoBehaviour
     private PlayerMovement _movement;
     private PlayerStats _stats;
     private InputAction _attackAction;
-    private bool _isAttacking;
+    private bool _isHolding;
     private Vector3 _lastAttackPoint;
 
     // 휘두를 때마다 발행한다. 효과음, 애니메이션이 구독한다.
@@ -40,29 +40,23 @@ public class PlayerAttack : MonoBehaviour
     private void Start()
     {
         _attackAction = GetComponent<PlayerInput>().actions["Attack"];
-    }
-
-    // 공격 버튼을 누르고 있는 동안 공격 속도에 맞춰 계속 휘두른다.
-    // 입력이 꺼지면(일시정지, 세션 종료) 액션도 꺼져서 IsPressed가 false가 된다.
-    private void Update()
-    {
-        if (_isAttacking || _stats == null || _attackAction == null || !_attackAction.IsPressed() || IsPointerOverUi())
-        {
-            return;
-        }
-
-        AttackAsync(destroyCancellationToken).Forget();
+        _attackAction.performed += OnAttackPerformed;
     }
 
     private void OnDestroy()
     {
+        if (_attackAction != null)
+        {
+            _attackAction.performed -= OnAttackPerformed;
+        }
+
         _onSwing.Dispose();
     }
 
     [Inject]
-    public void Construct(PlayerStats stats)
+    public void Construct(PlayerStats _stats)
     {
-        _stats = stats;
+        this._stats = _stats;
     }
 
     // 일시정지 버튼 같은 UI 위에서 누른 것으로는 휘두르지 않는다.
@@ -71,74 +65,100 @@ public class PlayerAttack : MonoBehaviour
         return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
     }
 
-    private async UniTaskVoid AttackAsync(CancellationToken token)
+    // 공격 버튼을 누르는 순간(performed) 휘두르기를 시작한다.
+    private void OnAttackPerformed(InputAction.CallbackContext _context)
     {
-        _isAttacking = true;
-        _onSwing.OnNext(Unit.Default);
+        if (!_isHolding)
+        {
+            HoldAttackAsync(destroyCancellationToken).Forget();
+        }
+    }
 
-        // 한 번 휘두르는 시간을 공격 속도에서 구하고, 그 안에서 맞는 시점과 남은 시간을 나눈다.
-        float swingDuration = 1f / _stats.AttacksPerSecond.CurrentValue;
-        float hitDelay = swingDuration * _hitTiming;
-
+    // 버튼을 누르고 있는 동안 공격 속도에 맞춰 계속 휘두른다.
+    // 입력이 꺼지면(일시정지, 세션 종료) 액션도 꺼져서 IsPressed가 false가 되고 반복이 끝난다.
+    private async UniTaskVoid HoldAttackAsync(CancellationToken _token)
+    {
+        _isHolding = true;
         try
         {
-            await UniTask.Delay(TimeSpan.FromSeconds(hitDelay), cancellationToken: token);
-
-            // 휘두르는 도중에 방향을 바꾸면 바뀐 방향으로 맞는다.
-            Vector3 attackPoint = transform.position
-                                  + _movement.FacingDirection * _stats.AttackReach.CurrentValue
-                                  + Vector3.up * _stats.AttackHeight.CurrentValue;
-            CollectTargets(attackPoint, _stats.AttackRadius.CurrentValue);
-
-            // 맞은 대상이 쓰러지면서 풀로 돌아가도 목록이 흔들리지 않도록 미리 모아 둔 뒤 때린다.
-            int damage = _stats.Damage.CurrentValue;
-            foreach (IDamageable target in _targets)
+            while (_attackAction.IsPressed())
             {
-                target.TakeDamage(damage);
-            }
-
-            _targets.Clear();
-
-            // 공격 속도만큼 다음 공격을 막는다.
-            float cooldown = swingDuration - hitDelay;
-            if (cooldown > 0f)
-            {
-                await UniTask.Delay(TimeSpan.FromSeconds(cooldown), cancellationToken: token);
+                if (_stats != null && !IsPointerOverUi())
+                {
+                    await AttackAsync(_token);
+                }
+                else
+                {
+                    await UniTask.Yield(_token);
+                }
             }
         }
         finally
         {
-            _isAttacking = false;
+            _isHolding = false;
+        }
+    }
+
+    private async UniTask AttackAsync(CancellationToken _token)
+    {
+        _onSwing.OnNext(Unit.Default);
+
+        // 한 번 휘두르는 시간을 공격 속도에서 구하고, 그 안에서 맞는 시점과 남은 시간을 나눈다.
+        float _swingDuration = 1f / _stats.AttacksPerSecond.CurrentValue;
+        float _hitDelay = _swingDuration * _hitTiming;
+
+        await UniTask.Delay(TimeSpan.FromSeconds(_hitDelay), cancellationToken: _token);
+
+        // 휘두르는 도중에 방향을 바꾸면 바뀐 방향으로 맞는다.
+        Vector3 _attackPoint = transform.position
+                              + _movement.FacingDirection * _stats.AttackReach.CurrentValue
+                              + Vector3.up * _stats.AttackHeight.CurrentValue;
+        CollectTargets(_attackPoint, _stats.AttackRadius.CurrentValue);
+
+        // 맞은 대상이 쓰러지면서 풀로 돌아가도 목록이 흔들리지 않도록 미리 모아 둔 뒤 때린다.
+        int _damage = _stats.Damage.CurrentValue;
+        foreach (IDamageable _target in _targets)
+        {
+            _target.TakeDamage(_damage);
+        }
+
+        _targets.Clear();
+
+        // 공격 속도만큼 다음 공격을 막는다.
+        float _cooldown = _swingDuration - _hitDelay;
+        if (_cooldown > 0f)
+        {
+            await UniTask.Delay(TimeSpan.FromSeconds(_cooldown), cancellationToken: _token);
         }
     }
 
     // 타격 범위에 걸친, 피해를 받을 수 있는 대상을 모두 모은다.
-    private void CollectTargets(Vector3 attackPoint, float radius)
+    private void CollectTargets(Vector3 _attackPoint, float _radius)
     {
-        _lastAttackPoint = attackPoint;
+        _lastAttackPoint = _attackPoint;
         _targets.Clear();
 
-        int count = OverlapAll(attackPoint, radius);
-        for (int i = 0; i < count; i++)
+        int _count = OverlapAll(_attackPoint, _radius);
+        for (int _i = 0; _i < _count; _i++)
         {
-            if (_hitCandidates[i].TryGetComponent(out IDamageable target) && target.CanTakeDamage && !_targets.Contains(target))
+            if (_hitCandidates[_i].TryGetComponent(out IDamageable _target) && _target.CanTakeDamage && !_targets.Contains(_target))
             {
-                _targets.Add(target);
+                _targets.Add(_target);
             }
         }
     }
 
     // 버퍼가 꽉 차면 범위 안 대상을 놓쳤을 수 있으므로 버퍼를 키워 다시 찾는다.
-    private int OverlapAll(Vector3 attackPoint, float radius)
+    private int OverlapAll(Vector3 _attackPoint, float _radius)
     {
         while (true)
         {
-            int count = Physics.OverlapSphereNonAlloc(
-                attackPoint, radius, _hitCandidates, Physics.AllLayers, QueryTriggerInteraction.Ignore);
+            int _count = Physics.OverlapSphereNonAlloc(
+                _attackPoint, _radius, _hitCandidates, Physics.AllLayers, QueryTriggerInteraction.Ignore);
 
-            if (count < _hitCandidates.Length)
+            if (_count < _hitCandidates.Length)
             {
-                return count;
+                return _count;
             }
 
             _hitCandidates = new Collider[_hitCandidates.Length * 2];

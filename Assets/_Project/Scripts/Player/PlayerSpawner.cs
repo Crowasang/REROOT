@@ -21,27 +21,27 @@ public class PlayerSpawner : MonoBehaviour, IPlayerSpawner
     }
 
     [Inject]
-    public void Construct(IObjectResolver resolver)
+    public void Construct(IObjectResolver _resolver)
     {
-        _resolver = resolver;
+        this._resolver = _resolver;
     }
 
     public void Spawn()
     {
-        PlayerController player = _resolver.Instantiate(_playerPrefab, _spawnPoint.position, Quaternion.identity);
-        _playerBody = player.GetComponent<Rigidbody>();
-        _player.Value = player;
+        PlayerController _player = _resolver.Instantiate(_playerPrefab, _spawnPoint.position, Quaternion.identity);
+        _playerBody = _player.GetComponent<Rigidbody>();
+        this._player.Value = _player;
     }
 
     public void MoveToSpawnPoint()
     {
-        IPlayerControl player = _player.CurrentValue;
-        if (player == null)
+        IPlayerControl _player = this._player.CurrentValue;
+        if (_player == null)
         {
             return;
         }
 
-        player.Transform.position = _spawnPoint.position;
+        _player.Transform.position = _spawnPoint.position;
         if (_playerBody != null)
         {
             _playerBody.position = _spawnPoint.position;

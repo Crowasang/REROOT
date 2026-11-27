@@ -41,13 +41,13 @@ public class TreeSpawner : MonoBehaviour, IForest
 
     private void Awake()
     {
-        Transform root = _treeRoot != null ? _treeRoot : transform;
+        Transform _root = _treeRoot != null ? _treeRoot : transform;
 
         // 인스턴스는 재사용되므로 처음 만들 때 한 번만 구독한다.
-        _pool = new TreePool(root, _poolDefaultCapacity, _poolMaxSize, tree =>
+        _pool = new TreePool(_root, _poolDefaultCapacity, _poolMaxSize, _tree =>
         {
-            tree.OnHit.Subscribe(_onTreeHit.OnNext).AddTo(tree);
-            tree.OnFelled.Subscribe(HandleTreeFelled).AddTo(tree);
+            _tree.OnHit.Subscribe(_onTreeHit.OnNext).AddTo(_tree);
+            _tree.OnFelled.Subscribe(HandleTreeFelled).AddTo(_tree);
         });
     }
 
@@ -58,39 +58,39 @@ public class TreeSpawner : MonoBehaviour, IForest
         _onCleared.Dispose();
     }
 
-    public void Spawn(TreeData data)
+    public void Spawn(TreeData _data)
     {
         Clear();
 
-        Vector3? clearCenter = _keepClearPoint != null ? _keepClearPoint.position : null;
-        ForestLayout.FillGrid(_poses, _spawnArea.bounds, _spacing, _positionJitter, _randomYaw, clearCenter, _keepClearRadius);
+        Vector3? _clearCenter = _keepClearPoint != null ? _keepClearPoint.position : null;
+        ForestLayout.FillGrid(_poses, _spawnArea.bounds, _spacing, _positionJitter, _randomYaw, _clearCenter, _keepClearRadius);
 
-        foreach (Pose pose in _poses)
+        foreach (Pose _pose in _poses)
         {
-            Trees tree = _pool.Get(data.Prefab);
-            tree.transform.SetPositionAndRotation(pose.position, pose.rotation);
-            _spawnedTrees.Add(tree);
+            Trees _tree = _pool.Get(_data.Prefab);
+            _tree.transform.SetPositionAndRotation(_pose.position, _pose.rotation);
+            _spawnedTrees.Add(_tree);
         }
     }
 
     private void Clear()
     {
-        foreach (Trees tree in _spawnedTrees)
+        foreach (Trees _tree in _spawnedTrees)
         {
-            if (tree != null)
+            if (_tree != null)
             {
-                _pool.Release(tree);
+                _pool.Release(_tree);
             }
         }
 
         _spawnedTrees.Clear();
     }
 
-    private void HandleTreeFelled(Trees tree)
+    private void HandleTreeFelled(Trees _tree)
     {
-        _spawnedTrees.Remove(tree);
-        _onTreeFelled.OnNext(tree);
-        _pool.Release(tree);
+        _spawnedTrees.Remove(_tree);
+        _onTreeFelled.OnNext(_tree);
+        _pool.Release(_tree);
 
         // 쓰러짐 구독자(보상 등)가 모두 처리된 뒤에 알려야 마지막 나무 보상이 빠지지 않는다.
         if (_spawnedTrees.Count == 0)

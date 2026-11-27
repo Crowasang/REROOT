@@ -28,56 +28,56 @@ public class AudioPlayer : MonoBehaviour, IAudioService
         _musicSource.loop = true;
 
         _sfxSources = new AudioSource[_sfxVoices];
-        for (int i = 0; i < _sfxVoices; i++)
+        for (int _i = 0; _i < _sfxVoices; _i++)
         {
-            _sfxSources[i] = CreateSource($"Sfx_{i:00}");
+            _sfxSources[_i] = CreateSource($"Sfx_{_i:00}");
         }
     }
 
     [Inject]
-    public void Construct(SoundLibrary library)
+    public void Construct(SoundLibrary _library)
     {
-        _library = library;
+        this._library = _library;
     }
 
-    public void PlaySfx(SoundId id)
+    public void PlaySfx(SoundId _id)
     {
-        if (_library == null || !_library.TryGetSfx(id, out SoundLibrary.SfxEntry entry) || entry.Clips.Count == 0)
+        if (_library == null || !_library.TryGetSfx(_id, out SoundLibrary.SfxEntry _entry) || _entry.Clips.Count == 0)
         {
             return;
         }
 
         // 일시정지 중에도 UI 소리는 나야 하므로 게임 시간이 아닌 실제 시간으로 잰다.
-        float now = Time.unscaledTime;
-        if (_lastPlayTime.TryGetValue(id, out float last) && now - last < entry.MinInterval)
+        float _now = Time.unscaledTime;
+        if (_lastPlayTime.TryGetValue(_id, out float _last) && _now - _last < _entry.MinInterval)
         {
             return;
         }
 
-        _lastPlayTime[id] = now;
+        _lastPlayTime[_id] = _now;
 
-        AudioSource source = _sfxSources[_nextSfxIndex];
+        AudioSource _source = _sfxSources[_nextSfxIndex];
         _nextSfxIndex = (_nextSfxIndex + 1) % _sfxSources.Length;
 
-        source.pitch = 1f + Random.Range(-entry.PitchVariation, entry.PitchVariation);
-        source.PlayOneShot(entry.Clips[Random.Range(0, entry.Clips.Count)], entry.Volume * _sfxVolume);
+        _source.pitch = 1f + Random.Range(-_entry.PitchVariation, _entry.PitchVariation);
+        _source.PlayOneShot(_entry.Clips[Random.Range(0, _entry.Clips.Count)], _entry.Volume * _sfxVolume);
     }
 
-    public void PlayMusic(MusicId id)
+    public void PlayMusic(MusicId _id)
     {
-        if (_currentMusic == id && _musicSource.isPlaying)
+        if (_currentMusic == _id && _musicSource.isPlaying)
         {
             return;
         }
 
-        if (_library == null || !_library.TryGetMusic(id, out SoundLibrary.MusicEntry entry) || entry.Clip == null)
+        if (_library == null || !_library.TryGetMusic(_id, out SoundLibrary.MusicEntry _entry) || _entry.Clip == null)
         {
             return;
         }
 
-        _currentMusic = id;
-        _currentMusicBaseVolume = entry.Volume;
-        _musicSource.clip = entry.Clip;
+        _currentMusic = _id;
+        _currentMusicBaseVolume = _entry.Volume;
+        _musicSource.clip = _entry.Clip;
         ApplyMusicVolume();
         _musicSource.Play();
     }
@@ -88,37 +88,37 @@ public class AudioPlayer : MonoBehaviour, IAudioService
         _musicSource.Stop();
     }
 
-    public void SetMusicDucked(bool isDucked)
+    public void SetMusicDucked(bool _isDucked)
     {
-        _isMusicDucked = isDucked;
+        _isMusicDucked = _isDucked;
         ApplyMusicVolume();
     }
 
-    public void SetSfxVolume(float volume)
+    public void SetSfxVolume(float _volume)
     {
-        _sfxVolume = Mathf.Clamp01(volume);
+        _sfxVolume = Mathf.Clamp01(_volume);
     }
 
-    public void SetMusicVolume(float volume)
+    public void SetMusicVolume(float _volume)
     {
-        _musicVolume = Mathf.Clamp01(volume);
+        _musicVolume = Mathf.Clamp01(_volume);
         ApplyMusicVolume();
     }
 
-    private AudioSource CreateSource(string sourceName)
+    private AudioSource CreateSource(string _sourceName)
     {
-        var child = new GameObject(sourceName);
-        child.transform.SetParent(transform, false);
+        var _child = new GameObject(_sourceName);
+        _child.transform.SetParent(transform, false);
 
-        AudioSource source = child.AddComponent<AudioSource>();
-        source.playOnAwake = false;
-        source.spatialBlend = 0f;
-        return source;
+        AudioSource _source = _child.AddComponent<AudioSource>();
+        _source.playOnAwake = false;
+        _source.spatialBlend = 0f;
+        return _source;
     }
 
     private void ApplyMusicVolume()
     {
-        float duck = _isMusicDucked ? DUCKED_MUSIC_RATIO : 1f;
-        _musicSource.volume = _currentMusicBaseVolume * _musicVolume * duck;
+        float _duck = _isMusicDucked ? DUCKED_MUSIC_RATIO : 1f;
+        _musicSource.volume = _currentMusicBaseVolume * _musicVolume * _duck;
     }
 }

@@ -15,5 +15,5 @@ public interface ISessionService
     void StartSession();
 
     // 이미 끝난 세션이면 아무것도 하지 않는다.
-    void EndSession(SessionEndReason reason);
+    void EndSession(SessionEndReason _reason);
 }

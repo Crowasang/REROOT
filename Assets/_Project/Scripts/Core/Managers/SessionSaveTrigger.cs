@@ -10,10 +10,10 @@ public sealed class SessionSaveTrigger : IStartable, IDisposable
     private readonly ISaveService _save;
     private IDisposable _subscription;
 
-    public SessionSaveTrigger(ISessionService session, ISaveService save)
+    public SessionSaveTrigger(ISessionService _session, ISaveService _save)
     {
-        _session = session;
-        _save = save;
+        this._session = _session;
+        this._save = _save;
     }
 
     public void Start()

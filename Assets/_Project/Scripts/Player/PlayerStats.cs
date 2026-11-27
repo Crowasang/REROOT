@@ -19,13 +19,13 @@ public sealed class PlayerStats : IDisposable
     private readonly ReactiveProperty<float> _attackHeight = new();
     private readonly IDisposable _subscription;
 
-    public PlayerStats(PlayerStatsData data, IStatService stats)
+    public PlayerStats(PlayerStatsData _data, IStatService _stats)
     {
-        _data = data;
-        _stats = stats;
+        this._data = _data;
+        this._stats = _stats;
 
         Recalculate();
-        _subscription = _stats.OnChanged.Subscribe(_ => Recalculate());
+        _subscription = this._stats.OnChanged.Subscribe(_ => Recalculate());
     }
 
     public ReadOnlyReactiveProperty<float> MoveSpeed => _moveSpeed;

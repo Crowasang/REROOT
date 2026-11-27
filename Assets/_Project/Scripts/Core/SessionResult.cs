@@ -1,10 +1,10 @@
 // 끝난 세션의 결과. 종료 화면과 저장이 쓴다.
 public readonly struct SessionResult
 {
-    public SessionResult(SessionEndReason reason, int woodGained)
+    public SessionResult(SessionEndReason _reason, int _woodGained)
     {
-        Reason = reason;
-        WoodGained = woodGained;
+        Reason = _reason;
+        WoodGained = _woodGained;
     }
 
     public SessionEndReason Reason { get; }

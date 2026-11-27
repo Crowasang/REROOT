@@ -6,5 +6,5 @@ public interface ISceneLoader
 {
     ReadOnlyReactiveProperty<bool> IsLoading { get; }
 
-    UniTask LoadAsync(SceneId scene);
+    UniTask LoadAsync(SceneId _scene);
 }

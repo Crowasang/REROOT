@@ -1,3 +1,4 @@
+using R3;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using VContainer;
@@ -24,9 +25,9 @@ public class PlayerMovement : MonoBehaviour
                 return 0f;
             }
 
-            Vector3 velocity = _rb.linearVelocity;
-            velocity.y = 0f;
-            return Mathf.Clamp01(velocity.magnitude / _stats.MoveSpeed.CurrentValue);
+            Vector3 _velocity = _rb.linearVelocity;
+            _velocity.y = 0f;
+            return Mathf.Clamp01(_velocity.magnitude / _stats.MoveSpeed.CurrentValue);
         }
     }
 
@@ -35,33 +36,26 @@ public class PlayerMovement : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
     }
 
-    private void FixedUpdate()
+    // 물리 이동은 물리 단계(FixedUpdate 타이밍)에서 해야 충돌 처리와 맞는다.
+    private void Start()
     {
-        if (_stats == null)
-        {
-            return;
-        }
-
-        // 위치를 직접 옮기면(MovePosition) 나무 틈에 대고 밀 때 겹침을 풀면서 반대편으로 빠져나갈 수 있다.
-        // 속도를 주면 물리 엔진이 충돌을 먼저 처리하므로 좁은 틈을 비집고 지나가지 못한다.
-        // 강화로 속도가 바뀌어도 바로 반영되도록 매번 현재 값을 읽는다.
-        _rb.linearVelocity = _moveDirection * _stats.MoveSpeed.CurrentValue;
-
-        Quaternion targetRotation = Quaternion.LookRotation(_facingDirection, Vector3.up);
-        _rb.MoveRotation(Quaternion.RotateTowards(_rb.rotation, targetRotation, _stats.TurnSpeed.CurrentValue * Time.fixedDeltaTime));
+        Observable.EveryUpdate(UnityFrameProvider.FixedUpdate)
+            .Where(_ => _stats != null && isActiveAndEnabled)
+            .Subscribe(_ => Step())
+            .AddTo(this);
     }
 
     [Inject]
-    public void Construct(PlayerStats stats)
+    public void Construct(PlayerStats _stats)
     {
-        _stats = stats;
+        this._stats = _stats;
     }
 
     // PlayerInput(Send Messages)이 Move 액션에서 호출한다.
-    public void OnMove(InputValue value)
+    public void OnMove(InputValue _value)
     {
-        Vector2 input = value.Get<Vector2>();
-        _moveDirection = Vector3.ClampMagnitude(new Vector3(input.x, 0f, input.y), 1f);
+        Vector2 _input = _value.Get<Vector2>();
+        _moveDirection = Vector3.ClampMagnitude(new Vector3(_input.x, 0f, _input.y), 1f);
 
         if (_moveDirection.sqrMagnitude > 0.01f)
         {
@@ -73,5 +67,16 @@ public class PlayerMovement : MonoBehaviour
     {
         _moveDirection = Vector3.zero;
         _rb.linearVelocity = Vector3.zero;
+    }
+
+    private void Step()
+    {
+        // 위치를 직접 옮기면(MovePosition) 나무 틈에 대고 밀 때 겹침을 풀면서 반대편으로 빠져나갈 수 있다.
+        // 속도를 주면 물리 엔진이 충돌을 먼저 처리하므로 좁은 틈을 비집고 지나가지 못한다.
+        // 강화로 속도가 바뀌어도 바로 반영되도록 매번 현재 값을 읽는다.
+        _rb.linearVelocity = _moveDirection * _stats.MoveSpeed.CurrentValue;
+
+        Quaternion _targetRotation = Quaternion.LookRotation(_facingDirection, Vector3.up);
+        _rb.MoveRotation(Quaternion.RotateTowards(_rb.rotation, _targetRotation, _stats.TurnSpeed.CurrentValue * Time.fixedDeltaTime));
     }
 }

@@ -11,11 +11,11 @@ public sealed class PlayerControlManager : IStartable, IDisposable
     private readonly IPauseService _pause;
     private readonly CompositeDisposable _disposables = new();
 
-    public PlayerControlManager(IPlayerSpawner playerSpawner, ISessionService session, IPauseService pause)
+    public PlayerControlManager(IPlayerSpawner _playerSpawner, ISessionService _session, IPauseService _pause)
     {
-        _playerSpawner = playerSpawner;
-        _session = session;
-        _pause = pause;
+        this._playerSpawner = _playerSpawner;
+        this._session = _session;
+        this._pause = _pause;
     }
 
     public void Start()
@@ -24,8 +24,8 @@ public sealed class PlayerControlManager : IStartable, IDisposable
                 _playerSpawner.Player,
                 _session.IsActive,
                 _pause.IsPaused,
-                (player, isActive, isPaused) => (player, canControl: isActive && !isPaused))
-            .Subscribe(state => state.player?.SetControlEnabled(state.canControl))
+                (_player, _isActive, _isPaused) => (player: _player, canControl: _isActive && !_isPaused))
+            .Subscribe(_state => _state.player?.SetControlEnabled(_state.canControl))
             .AddTo(_disposables);
     }
 

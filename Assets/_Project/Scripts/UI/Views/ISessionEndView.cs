@@ -5,7 +5,7 @@ public interface ISessionEndView
 {
     Observable<Unit> OnContinue { get; }
 
-    void Show(SessionResult result);
+    void Show(SessionResult _result);
 
     void Hide();
 }

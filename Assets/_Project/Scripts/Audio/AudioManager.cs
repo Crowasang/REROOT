@@ -17,23 +17,23 @@ public sealed class AudioManager : IStartable, IDisposable
     private readonly CompositeDisposable _disposables = new();
 
     public AudioManager(
-        IAudioService audio,
-        IPlayerSpawner playerSpawner,
-        IForest forest,
-        ISessionService session,
-        IPauseService pause,
-        IHudView hud,
-        IPauseView pauseView,
-        ISessionEndView sessionEndView)
+        IAudioService _audio,
+        IPlayerSpawner _playerSpawner,
+        IForest _forest,
+        ISessionService _session,
+        IPauseService _pause,
+        IHudView _hud,
+        IPauseView _pauseView,
+        ISessionEndView _sessionEndView)
     {
-        _audio = audio;
-        _playerSpawner = playerSpawner;
-        _forest = forest;
-        _session = session;
-        _pause = pause;
-        _hud = hud;
-        _pauseView = pauseView;
-        _sessionEndView = sessionEndView;
+        this._audio = _audio;
+        this._playerSpawner = _playerSpawner;
+        this._forest = _forest;
+        this._session = _session;
+        this._pause = _pause;
+        this._hud = _hud;
+        this._pauseView = _pauseView;
+        this._sessionEndView = _sessionEndView;
     }
 
     public void Start()
@@ -52,14 +52,14 @@ public sealed class AudioManager : IStartable, IDisposable
     {
         // 플레이어는 나중에 만들어지므로, 만들어질 때마다 그 플레이어의 휘두르기를 구독한다.
         _playerSpawner.Player
-            .Where(player => player != null)
-            .Select(player => player.OnSwing)
+            .Where(_player => _player != null)
+            .Select(_player => _player.OnSwing)
             .Switch()
             .Subscribe(_ => _audio.PlaySfx(SoundId.Swing))
             .AddTo(_disposables);
 
         _forest.OnTreeHit
-            .Subscribe(tree => _audio.PlaySfx(tree.IsFelled ? SoundId.TreeFall : SoundId.Chop))
+            .Subscribe(_tree => _audio.PlaySfx(_tree.IsFelled ? SoundId.TreeFall : SoundId.Chop))
             .AddTo(_disposables);
 
         // 쓰러지는 연출이 끝나고 재화가 들어오는 순간
@@ -74,9 +74,9 @@ public sealed class AudioManager : IStartable, IDisposable
         _session.OnStarted.Subscribe(_ => _audio.PlayMusic(MusicId.Forest)).AddTo(_disposables);
 
         _session.OnEnded
-            .Subscribe(result =>
+            .Subscribe(_result =>
             {
-                switch (result.Reason)
+                switch (_result.Reason)
                 {
                     case SessionEndReason.TimeUp:
                         _audio.PlaySfx(SoundId.TimeUp);

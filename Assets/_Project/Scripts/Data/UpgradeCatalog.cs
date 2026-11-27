@@ -9,13 +9,13 @@ public class UpgradeCatalog : ScriptableObject
 
     public IReadOnlyList<UpgradeData> Upgrades => _upgrades;
 
-    public UpgradeData Find(string id)
+    public UpgradeData Find(string _id)
     {
-        foreach (UpgradeData upgrade in _upgrades)
+        foreach (UpgradeData _upgrade in _upgrades)
         {
-            if (upgrade != null && upgrade.Id == id)
+            if (_upgrade != null && _upgrade.Id == _id)
             {
-                return upgrade;
+                return _upgrade;
             }
         }
 

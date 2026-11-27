@@ -10,11 +10,11 @@ public sealed class RecordManager : IStartable, IDisposable
     private readonly ISessionService _session;
     private readonly CompositeDisposable _disposables = new();
 
-    public RecordManager(IPlayerRecords records, IForest forest, ISessionService session)
+    public RecordManager(IPlayerRecords _records, IForest _forest, ISessionService _session)
     {
-        _records = records;
-        _forest = forest;
-        _session = session;
+        this._records = _records;
+        this._forest = _forest;
+        this._session = _session;
     }
 
     public void Start()

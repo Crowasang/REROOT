@@ -4,5 +4,5 @@ public interface IDamageable
     // 이미 쓰러졌거나 무적이면 false. 공격은 이 값이 true인 대상만 맞힌다.
     bool CanTakeDamage { get; }
 
-    void TakeDamage(int damage);
+    void TakeDamage(int _damage);
 }

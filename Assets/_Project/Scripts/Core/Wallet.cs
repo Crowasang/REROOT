@@ -8,33 +8,33 @@ public sealed class Wallet : IWallet, ISaveable, IDisposable
 
     public ReadOnlyReactiveProperty<int> Wood => _wood;
 
-    public void AddWood(int amount)
+    public void AddWood(int _amount)
     {
-        if (amount > 0)
+        if (_amount > 0)
         {
-            _wood.Value += amount;
+            _wood.Value += _amount;
         }
     }
 
-    public bool TrySpendWood(int amount)
+    public bool TrySpendWood(int _amount)
     {
-        if (amount < 0 || _wood.Value < amount)
+        if (_amount < 0 || _wood.Value < _amount)
         {
             return false;
         }
 
-        _wood.Value -= amount;
+        _wood.Value -= _amount;
         return true;
     }
 
-    public void Load(SaveData data)
+    public void Load(SaveData _data)
     {
-        _wood.Value = Math.Max(0, data.Wood);
+        _wood.Value = Math.Max(0, _data.Wood);
     }
 
-    public void Write(SaveData data)
+    public void Write(SaveData _data)
     {
-        data.Wood = _wood.Value;
+        _data.Wood = _wood.Value;
     }
 
     public void Dispose()

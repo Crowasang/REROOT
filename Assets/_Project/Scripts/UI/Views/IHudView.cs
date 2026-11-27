@@ -6,7 +6,7 @@ public interface IHudView
     Observable<Unit> OnPauseClicked { get; }
 
     // ratio: 시작 시간 대비 남은 시간(0~1)
-    void SetTime(float ratio, int seconds);
+    void SetTime(float _ratio, int _seconds);
 
-    void SetWood(int wood);
+    void SetWood(int _wood);
 }

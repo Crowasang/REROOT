@@ -45,10 +45,10 @@ public class TreeView : MonoBehaviour
         _hpBar.Hide();
     }
 
-    public void PlayHit(float hpRatio)
+    public void PlayHit(float _hpRatio)
     {
         Initialize();
-        _hpBar.Show(hpRatio);
+        _hpBar.Show(_hpRatio);
 
         // 연달아 맞으면 앞 흔들림을 끊고 새로 흔든다.
         CancelHit();
@@ -56,7 +56,7 @@ public class TreeView : MonoBehaviour
         PlayHitAsync(_hitCts.Token).Forget();
     }
 
-    public async UniTask PlayFallAsync(CancellationToken token)
+    public async UniTask PlayFallAsync(CancellationToken _token)
     {
         Initialize();
         CancelHit();
@@ -64,7 +64,7 @@ public class TreeView : MonoBehaviour
         _visual.localPosition = _visualBasePosition;
         SetTint(_fallingColor);
 
-        await UniTask.Delay(TimeSpan.FromSeconds(_fallDuration), cancellationToken: token);
+        await UniTask.Delay(TimeSpan.FromSeconds(_fallDuration), cancellationToken: _token);
     }
 
     // 프리팹이 꺼진 채로 만들어질 수 있으므로 Awake 대신 처음 쓸 때 준비한다.
@@ -82,20 +82,20 @@ public class TreeView : MonoBehaviour
         _isInitialized = true;
     }
 
-    private async UniTaskVoid PlayHitAsync(CancellationToken token)
+    private async UniTaskVoid PlayHitAsync(CancellationToken _token)
     {
         SetTint(_hitFlashColor);
 
         try
         {
-            float elapsed = 0f;
-            while (elapsed < _hitShakeDuration)
+            float _elapsed = 0f;
+            while (_elapsed < _hitShakeDuration)
             {
                 // 바닥과 나란하게(XZ) 흔든다.
-                Vector2 offset = UnityEngine.Random.insideUnitCircle * _hitShakeStrength;
-                _visual.localPosition = _visualBasePosition + new Vector3(offset.x, 0f, offset.y);
-                await UniTask.Yield(PlayerLoopTiming.Update, token);
-                elapsed += Time.deltaTime;
+                Vector2 _offset = UnityEngine.Random.insideUnitCircle * _hitShakeStrength;
+                _visual.localPosition = _visualBasePosition + new Vector3(_offset.x, 0f, _offset.y);
+                await UniTask.Yield(PlayerLoopTiming.Update, _token);
+                _elapsed += Time.deltaTime;
             }
 
             _visual.localPosition = _visualBasePosition;
@@ -120,21 +120,21 @@ public class TreeView : MonoBehaviour
     }
 
     // 머티리얼을 복제하지 않고 색만 덮어쓴다. 나무 수백 그루가 머티리얼을 공유하기 때문이다.
-    private void SetTint(Color color)
+    private void SetTint(Color _color)
     {
-        _tintBlock.SetColor(BASE_COLOR_ID, color);
-        foreach (Renderer target in _renderers)
+        _tintBlock.SetColor(BASE_COLOR_ID, _color);
+        foreach (Renderer _target in _renderers)
         {
-            target.SetPropertyBlock(_tintBlock);
+            _target.SetPropertyBlock(_tintBlock);
         }
     }
 
     // 덮어쓴 색을 지워 머티리얼 원래 색으로 돌린다.
     private void ClearTint()
     {
-        foreach (Renderer target in _renderers)
+        foreach (Renderer _target in _renderers)
         {
-            target.SetPropertyBlock(null);
+            _target.SetPropertyBlock(null);
         }
     }
 }

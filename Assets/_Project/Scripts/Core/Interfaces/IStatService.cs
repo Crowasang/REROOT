@@ -7,5 +7,5 @@ public interface IStatService
     // 수정자가 바뀌었을 때(강화 구매, 세이브 불러오기). 최종값을 다시 계산해야 하는 쪽이 구독한다.
     Observable<Unit> OnChanged { get; }
 
-    float Evaluate(StatType stat, float baseValue);
+    float Evaluate(StatType _stat, float _baseValue);
 }

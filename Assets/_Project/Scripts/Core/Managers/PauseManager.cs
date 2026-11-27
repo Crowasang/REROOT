@@ -12,17 +12,17 @@ public sealed class PauseManager : IPauseService, IDisposable
     private readonly ReactiveProperty<bool> _isPaused = new(false);
     private readonly CompositeDisposable _disposables = new();
 
-    // pauseAction: 일시정지 창을 열고 닫는 키. 플레이어 입력이 꺼진 일시정지 중에도 받아야 하므로 PlayerInput과 따로 둔다.
-    public PauseManager(ISessionService session, InputAction pauseAction)
+    // _pauseAction: 일시정지 창을 열고 닫는 키. 플레이어 입력이 꺼진 일시정지 중에도 받아야 하므로 PlayerInput과 따로 둔다.
+    public PauseManager(ISessionService _session, InputAction _pauseAction)
     {
-        _session = session;
-        _pauseAction = pauseAction;
+        this._session = _session;
+        this._pauseAction = _pauseAction;
 
-        _pauseAction.performed += HandlePausePressed;
-        _pauseAction.Enable();
+        this._pauseAction.performed += HandlePausePressed;
+        this._pauseAction.Enable();
 
-        _session.IsActive
-            .Where(isActive => !isActive)
+        this._session.IsActive
+            .Where(_isActive => !_isActive)
             .Subscribe(_ => SetPaused(false))
             .AddTo(_disposables);
     }
@@ -57,7 +57,7 @@ public sealed class PauseManager : IPauseService, IDisposable
     }
 
     // ESC는 열려 있으면 닫고, 닫혀 있으면 연다.
-    private void HandlePausePressed(InputAction.CallbackContext context)
+    private void HandlePausePressed(InputAction.CallbackContext _context)
     {
         if (_isPaused.Value)
         {
@@ -69,9 +69,9 @@ public sealed class PauseManager : IPauseService, IDisposable
         }
     }
 
-    private void SetPaused(bool isPaused)
+    private void SetPaused(bool _isPaused)
     {
-        _isPaused.Value = isPaused;
-        Time.timeScale = isPaused ? 0f : 1f;
+        this._isPaused.Value = _isPaused;
+        Time.timeScale = _isPaused ? 0f : 1f;
     }
 }

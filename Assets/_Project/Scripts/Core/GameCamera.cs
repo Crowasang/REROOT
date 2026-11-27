@@ -1,3 +1,4 @@
+using R3;
 using Unity.Cinemachine;
 using UnityEngine;
 
@@ -16,19 +17,19 @@ public class GameCamera : MonoBehaviour, ICameraController
     private Rect _bounds;
     private bool _hasBounds;
 
-    // Cinemachine은 LateUpdate에서 카메라를 옮기므로, 그보다 먼저 Update에서 포커스를 옮긴다.
-    private void Update()
+    // Cinemachine은 LateUpdate에서 카메라를 옮기므로, 그보다 먼저(Update 단계) 포커스를 옮긴다.
+    private void Start()
     {
-        if (_target != null)
-        {
-            _focus.position = ClampToBounds(_target.position);
-        }
+        Observable.EveryUpdate()
+            .Where(_ => _target != null)
+            .Subscribe(_ => _focus.position = ClampToBounds(_target.position))
+            .AddTo(this);
     }
 
-    public void SetTarget(Transform target)
+    public void SetTarget(Transform _target)
     {
-        _target = target;
-        _focus.position = ClampToBounds(target.position);
+        this._target = _target;
+        _focus.position = ClampToBounds(_target.position);
         _camera.Follow = _focus;
 
         // 시작할 때 이전 위치에서 미끄러져 오지 않고 바로 대상 위치에서 시작한다.
@@ -36,28 +37,28 @@ public class GameCamera : MonoBehaviour, ICameraController
     }
 
     // rect의 x는 월드 X, y는 월드 Z 범위다.
-    public void SetBounds(Rect rect)
+    public void SetBounds(Rect _rect)
     {
-        _bounds = rect;
+        _bounds = _rect;
         _hasBounds = true;
     }
 
-    private Vector3 ClampToBounds(Vector3 position)
+    private Vector3 ClampToBounds(Vector3 _position)
     {
         if (!_hasBounds)
         {
-            return new Vector3(position.x, 0f, position.z);
+            return new Vector3(_position.x, 0f, _position.z);
         }
 
         return new Vector3(
-            ClampAxis(position.x, _bounds.xMin + _edgeInset.x, _bounds.xMax - _edgeInset.x),
+            ClampAxis(_position.x, _bounds.xMin + _edgeInset.x, _bounds.xMax - _edgeInset.x),
             0f,
-            ClampAxis(position.z, _bounds.yMin + _edgeInset.y, _bounds.yMax - _edgeInset.y));
+            ClampAxis(_position.z, _bounds.yMin + _edgeInset.y, _bounds.yMax - _edgeInset.y));
     }
 
     // 범위가 들여쓰기보다 좁으면 가운데에 고정한다.
-    private static float ClampAxis(float value, float min, float max)
+    private static float ClampAxis(float _value, float _min, float _max)
     {
-        return min <= max ? Mathf.Clamp(value, min, max) : (min + max) * 0.5f;
+        return _min <= _max ? Mathf.Clamp(_value, _min, _max) : (_min + _max) * 0.5f;
     }
 }

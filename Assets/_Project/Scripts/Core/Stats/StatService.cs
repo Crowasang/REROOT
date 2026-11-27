@@ -14,21 +14,21 @@ public sealed class StatService : IStatService, IDisposable
     private readonly Subject<Unit> _onChanged = new();
     private readonly IDisposable _subscription;
 
-    public StatService(UpgradeCatalog catalog, IUpgradeService upgrades)
+    public StatService(UpgradeCatalog _catalog, IUpgradeService _upgrades)
     {
-        _catalog = catalog;
-        _upgrades = upgrades;
+        this._catalog = _catalog;
+        this._upgrades = _upgrades;
 
         Rebuild();
-        _subscription = _upgrades.OnLevelChanged.Subscribe(_ => Rebuild());
+        _subscription = this._upgrades.OnLevelChanged.Subscribe(_ => Rebuild());
     }
 
     public Observable<Unit> OnChanged => _onChanged;
 
-    public float Evaluate(StatType stat, float baseValue)
+    public float Evaluate(StatType _stat, float _baseValue)
     {
-        int index = (int)stat;
-        return (baseValue + _flat[index]) * (1f + _percent[index]);
+        int _index = (int)_stat;
+        return (_baseValue + _flat[_index]) * (1f + _percent[_index]);
     }
 
     public void Dispose()
@@ -43,24 +43,24 @@ public sealed class StatService : IStatService, IDisposable
         Array.Clear(_flat, 0, STAT_COUNT);
         Array.Clear(_percent, 0, STAT_COUNT);
 
-        foreach (UpgradeData upgrade in _catalog.Upgrades)
+        foreach (UpgradeData _upgrade in _catalog.Upgrades)
         {
-            int level = _upgrades.GetLevel(upgrade);
-            if (level <= 0)
+            int _level = _upgrades.GetLevel(_upgrade);
+            if (_level <= 0)
             {
                 continue;
             }
 
-            foreach (UpgradeEffect effect in upgrade.Effects)
+            foreach (UpgradeEffect _effect in _upgrade.Effects)
             {
-                float amount = effect.ValuePerLevel * level;
-                if (effect.ModifierType == StatModifierType.Flat)
+                float _amount = _effect.ValuePerLevel * _level;
+                if (_effect.ModifierType == StatModifierType.Flat)
                 {
-                    _flat[(int)effect.Stat] += amount;
+                    _flat[(int)_effect.Stat] += _amount;
                 }
                 else
                 {
-                    _percent[(int)effect.Stat] += amount;
+                    _percent[(int)_effect.Stat] += _amount;
                 }
             }
         }

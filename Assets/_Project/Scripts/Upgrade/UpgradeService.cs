@@ -11,68 +11,68 @@ public sealed class UpgradeService : IUpgradeService, ISaveable, IDisposable
     private readonly Dictionary<string, int> _levels = new();
     private readonly Subject<UpgradeData> _onLevelChanged = new();
 
-    public UpgradeService(UpgradeCatalog catalog, IWallet wallet)
+    public UpgradeService(UpgradeCatalog _catalog, IWallet _wallet)
     {
-        _catalog = catalog;
-        _wallet = wallet;
+        this._catalog = _catalog;
+        this._wallet = _wallet;
     }
 
     public Observable<UpgradeData> OnLevelChanged => _onLevelChanged;
 
-    public int GetLevel(UpgradeData upgrade)
+    public int GetLevel(UpgradeData _upgrade)
     {
-        return upgrade != null && _levels.TryGetValue(upgrade.Id, out int level) ? level : 0;
+        return _upgrade != null && _levels.TryGetValue(_upgrade.Id, out int _level) ? _level : 0;
     }
 
-    public bool IsMaxLevel(UpgradeData upgrade)
+    public bool IsMaxLevel(UpgradeData _upgrade)
     {
-        return GetLevel(upgrade) >= upgrade.MaxLevel;
+        return GetLevel(_upgrade) >= _upgrade.MaxLevel;
     }
 
-    public int GetNextCost(UpgradeData upgrade)
+    public int GetNextCost(UpgradeData _upgrade)
     {
-        return IsMaxLevel(upgrade) ? -1 : upgrade.GetCost(GetLevel(upgrade));
+        return IsMaxLevel(_upgrade) ? -1 : _upgrade.GetCost(GetLevel(_upgrade));
     }
 
-    public bool CanPurchase(UpgradeData upgrade)
+    public bool CanPurchase(UpgradeData _upgrade)
     {
-        return upgrade != null && !IsMaxLevel(upgrade) && _wallet.Wood.CurrentValue >= GetNextCost(upgrade);
+        return _upgrade != null && !IsMaxLevel(_upgrade) && _wallet.Wood.CurrentValue >= GetNextCost(_upgrade);
     }
 
-    public bool TryPurchase(UpgradeData upgrade)
+    public bool TryPurchase(UpgradeData _upgrade)
     {
-        if (!CanPurchase(upgrade) || !_wallet.TrySpendWood(GetNextCost(upgrade)))
+        if (!CanPurchase(_upgrade) || !_wallet.TrySpendWood(GetNextCost(_upgrade)))
         {
             return false;
         }
 
-        _levels[upgrade.Id] = GetLevel(upgrade) + 1;
-        _onLevelChanged.OnNext(upgrade);
+        _levels[_upgrade.Id] = GetLevel(_upgrade) + 1;
+        _onLevelChanged.OnNext(_upgrade);
         return true;
     }
 
-    public void Load(SaveData data)
+    public void Load(SaveData _data)
     {
         _levels.Clear();
-        foreach (KeyValuePair<string, int> pair in data.UpgradeLevels)
+        foreach (KeyValuePair<string, int> _pair in _data.UpgradeLevels)
         {
             // 출시 후 지워진 강화가 세이브에 남아 있어도 무시한다.
-            UpgradeData upgrade = _catalog.Find(pair.Key);
-            if (upgrade != null)
+            UpgradeData _upgrade = _catalog.Find(_pair.Key);
+            if (_upgrade != null)
             {
-                _levels[pair.Key] = Math.Min(pair.Value, upgrade.MaxLevel);
+                _levels[_pair.Key] = Math.Min(_pair.Value, _upgrade.MaxLevel);
             }
         }
 
-        foreach (UpgradeData upgrade in _catalog.Upgrades)
+        foreach (UpgradeData _upgrade in _catalog.Upgrades)
         {
-            _onLevelChanged.OnNext(upgrade);
+            _onLevelChanged.OnNext(_upgrade);
         }
     }
 
-    public void Write(SaveData data)
+    public void Write(SaveData _data)
     {
-        data.UpgradeLevels = new Dictionary<string, int>(_levels);
+        _data.UpgradeLevels = new Dictionary<string, int>(_levels);
     }
 
     public void Dispose()

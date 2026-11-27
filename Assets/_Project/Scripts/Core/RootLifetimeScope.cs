@@ -9,19 +9,19 @@ public class RootLifetimeScope : LifetimeScope
 {
     [SerializeField] private UpgradeCatalog _upgradeCatalog;
 
-    protected override void Configure(IContainerBuilder builder)
+    protected override void Configure(IContainerBuilder _builder)
     {
-        builder.RegisterInstance(_upgradeCatalog);
+        _builder.RegisterInstance(_upgradeCatalog);
 
         // 진행 상태(저장 대상)
-        builder.Register<Wallet>(Lifetime.Singleton).AsImplementedInterfaces();
-        builder.Register<PlayerRecords>(Lifetime.Singleton).AsImplementedInterfaces();
-        builder.Register<UpgradeService>(Lifetime.Singleton).AsImplementedInterfaces();
-        builder.Register<StatService>(Lifetime.Singleton).AsImplementedInterfaces();
+        _builder.Register<Wallet>(Lifetime.Singleton).AsImplementedInterfaces();
+        _builder.Register<PlayerRecords>(Lifetime.Singleton).AsImplementedInterfaces();
+        _builder.Register<UpgradeService>(Lifetime.Singleton).AsImplementedInterfaces();
+        _builder.Register<StatService>(Lifetime.Singleton).AsImplementedInterfaces();
 
         // 저장·씬
-        builder.RegisterEntryPoint<SaveService>();
-        builder.RegisterEntryPoint<AutoSaveManager>();
-        builder.Register<SceneLoader>(Lifetime.Singleton).AsImplementedInterfaces();
+        _builder.RegisterEntryPoint<SaveService>();
+        _builder.RegisterEntryPoint<AutoSaveManager>();
+        _builder.Register<SceneLoader>(Lifetime.Singleton).AsImplementedInterfaces();
     }
 }
