@@ -62,6 +62,13 @@ They exist in `Scripts/Core`, `Scripts/Upgrade`, `Scripts/Audio`, `Scripts/Tree`
 - VARCO 3D: always work in a new flow (the user's "REROOT" flow); never modify the user's other flows.
 - Move files inside Unity, or move the `.meta` file together with the asset.
 
+## Docs (`Docs/`)
+
+- Write docs in Korean: short sentences, tables for lists of classes and rules. Use real names only and check they still exist.
+- Keep docs in sync with code in the same PR as the code change, in a separate `doc:` commit. Structure changes (manager, service, state, saveable, view, scene, registration) → `ARCHITECTURE.md`; folder or code rule changes → `CODE_CONVENTION.md`; git/PR flow → `GIT_CONVENTION.md`.
+- When a rule in `Docs/` changes, update the matching line in this file too (and the reverse).
+- The repo is public: no other projects' documents, team members' names, or private info.
+
 ## Git convention ([Docs/GIT_CONVENTION.md](Docs/GIT_CONVENTION.md))
 
 - Branches: `main` (stable), `dev` (integration). Always branch from `dev`, one branch per task: `feat/name`, `fix/name`, `doc/name` (lowercase, hyphens, e.g. `feat/upgrade-ui`).
