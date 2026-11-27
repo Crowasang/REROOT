@@ -81,3 +81,13 @@ crashlytics-build.properties
 
 # 블렌더 원본(.blend)과 내려받은 원본 모델. Unity 밖(Assets 밖)에 두고 깃에 올리지 않는다.
 /ArtSource/
+
+# 플러그인 폴더는 올리지 않는다. NuGet 패키지는 Assets/packages.config를 보고 NuGetForUnity가 복원한다.
+/[Aa]ssets/[Pp]ackages/
+/[Aa]ssets/[Pp]ackages.meta
+/[Aa]ssets/[Pp]lugins/[Dd]emigiant/
+/[Aa]ssets/[Pp]lugins/[Dd]emigiant.meta
+
+# 에셋은 따로 공유한다.
+/[Aa]ssets/[Rr]esources/
+/[Aa]ssets/[Rr]esources.meta

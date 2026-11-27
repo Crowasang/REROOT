@@ -6,8 +6,7 @@
 |---|---|---|
 | 클래스, 구조체, 열거형, 인터페이스 | PascalCase (인터페이스는 `I` 접두사) | `TreeSpawner`, `IDamageable` |
 | 메서드, 프로퍼티, 이벤트 | PascalCase | `TakeDamage()`, `MaxHp` |
-| 필드 (private, protected, `[SerializeField]`) | `_camelCase` | `_moveSpeed`, `_currentHp` |
-| 지역 변수, 매개변수 | camelCase | `spawnPosition`, `damage` |
+| 필드, 지역 변수, 매개변수 | `_camelCase` | `_moveSpeed`, `_spawnPosition`, `_damage` |
 | 상수 (`const`, `static readonly` 상수 값) | UPPER_SNAKE_CASE | `MAX_STAGE`, `DEFAULT_SESSION_TIME` |
 | 열거형 값 | PascalCase | `TreeState.Falling` |
 | 비동기 메서드 | `Async` 접미사 | `PlayFallAsync()` |
@@ -64,6 +63,28 @@ Assets/_Project/
 5. Unity 메시지 (`Awake`, `OnEnable`, `Start`, `Update`, `OnDisable`, `OnDestroy` 순)
 6. public 메서드
 7. private 메서드
+
+## Update 금지
+
+`Update` / `FixedUpdate` / `LateUpdate`(VContainer `ITickable` 포함)를 쓰지 않는다.
+
+| 하고 싶은 것 | 쓰는 것 |
+|---|---|
+| 입력 | Input System의 `performed` / `canceled` 이벤트 |
+| 값 변화에 반응 | R3 구독 |
+| 기다리기, 시간 재기 | UniTask (`UniTask.Delay`, `UniTask.WaitUntil`) |
+| 부드럽게 바꾸기(이동·회전·페이드) | DOTween |
+| 정말 매 프레임 해야 하는 일(물리 이동 등) | R3 `Observable.EveryUpdate()` / `Observable.EveryUpdate(UnityFrameProvider.FixedUpdate)`를 구독하고 `.AddTo`로 수명을 묶는다 |
+
+## 의존과 생성
+
+- 다른 스크립트는 구체 클래스가 아니라 인터페이스로 받는다. 받는 방법은 VContainer 생성자 주입(또는 `[Inject]`)이다. 싱글톤과 `FindObjectOfType`은 쓰지 않는다.
+- 자주 생기고 사라지는 오브젝트는 `Instantiate`/`Destroy` 대신 오브젝트 풀을 쓴다.
+
+## 주석
+
+- public 메서드에는 필요하면 `///` 요약을 단다.
+- 할 일은 `// TODO: 내용 (작성자)` 형식으로 쓴다.
 
 ## 수치와 데이터
 
